@@ -1,4 +1,5 @@
 import 'package:chit_chat/src/domain/entities/user.dart';
+import 'package:chit_chat/src/domain/entities/user_profile.dart';
 
 abstract class UserRepository {
   void killInstance();
@@ -23,4 +24,8 @@ abstract class UserRepository {
   });
 
   Future<List<User>> getUsers();
+
+  Future<UserProfile> getUserProfile(String userId);
+  Future<void> updateUserProfile(UserProfile profile);
+  Future<void> deleteUserProfile(String userId);
 }

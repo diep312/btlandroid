@@ -26,109 +26,134 @@ class _UsernameViewState extends ViewState<UsernameView, UsernameController> {
 
   @override
   Widget get view {
-    Size size = MediaQuery.of(context).size;
-
     return Scaffold(
       key: globalKey,
       body: ControlledWidgetBuilder<UsernameController>(
           builder: (context, controller) {
-        return Stack(
-          children: [
-            SingleChildScrollView(
-              physics: kPhysics,
-              child: SizedBox(
-                width: size.width,
-                height: size.height,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: size.width * 0.76,
-                      child: Text(
+        Size size = MediaQuery.of(context).size;
+        return Container(
+          width: size.width,
+          height: size.height,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFFC466B), // Pinkish
+                Color(0xFF3F5EFB), // Bluish
+              ],
+            ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 60),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(32),
+                      topRight: Radius.circular(32),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 8),
+                      Text(
                         DefaultTexts.typePersonalInfos,
                         textAlign: TextAlign.center,
-                        style: k14w400AxiBlackGeneralText(color: kBlack),
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: size.height * 0.05),
-                    Form(
-                      key: controller.formkey,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: size.width * 0.76,
-                            child: KTextFormField(
-                              onChanged: controller.onfirstNameChanged,
-                              mainText: DefaultTexts.yourFirstName,
-                              mainTextColor: kBlack,
-                              contentTextColor: kBlack,
-                              hintText: DefaultTexts.typeYourFirstName,
-                              maxLength: 30,
-                              keyboardType: TextInputType.text,
-                              validator: ValidatorHelper.kNameValidator,
-                              nullAutoValidateMode:
-                                  controller.autovalidateMode == null
-                                      ? true
-                                      : false,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              isSecurityCode: false,
+                      const SizedBox(height: 32),
+                      Form(
+                        key: controller.formkey,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: KTextFormField(
+                                onChanged: controller.onfirstNameChanged,
+                                mainText: DefaultTexts.yourFirstName,
+                                mainTextColor: Colors.black,
+                                contentTextColor: Colors.black,
+                                hintText: DefaultTexts.typeYourFirstName,
+                                maxLength: 30,
+                                keyboardType: TextInputType.text,
+                                validator: ValidatorHelper.kNameValidator,
+                                nullAutoValidateMode:
+                                    controller.autovalidateMode == null
+                                        ? true
+                                        : false,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                isSecurityCode: false,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 0),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: size.width * 0.76,
-                            child: KTextFormField(
-                              isSecurityCode: false,
-                              onChanged: controller.onLastNameChanged,
-                              mainText: DefaultTexts.yourLastName,
-                              mainTextColor: kBlack,
-                              contentTextColor: kBlack,
-                              hintText: DefaultTexts.typeYourLastName,
-                              maxLength: 30,
-                              keyboardType: TextInputType.name,
-                              nullAutoValidateMode:
-                                  controller.autovalidateMode == null
-                                      ? true
-                                      : false,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: ValidatorHelper.kNameValidator,
+                            const SizedBox(height: 18),
+                            SizedBox(
+                              width: double.infinity,
+                              child: KTextFormField(
+                                isSecurityCode: false,
+                                onChanged: controller.onLastNameChanged,
+                                mainText: DefaultTexts.yourLastName,
+                                mainTextColor: Colors.black,
+                                contentTextColor: Colors.black,
+                                hintText: DefaultTexts.typeYourLastName,
+                                maxLength: 30,
+                                keyboardType: TextInputType.name,
+                                nullAutoValidateMode:
+                                    controller.autovalidateMode == null
+                                        ? true
+                                        : false,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                validator: ValidatorHelper.kNameValidator,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 0),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: size.height * 0.05),
-                          ControlledWidgetBuilder<UsernameController>(
-                              builder: (context, controller) {
-                            return KButton(
-                              mainText: DefaultTexts.signUp,
-                              onPressed: controller.isButtonDisabled
-                                  ? () {}
-                                  : controller.onButtonPressed,
-                              bgColor: controller.isButtonDisabled
-                                  ? kDisabled
-                                  : kPrimary,
-                            );
-                          }),
-                        ],
+                            const SizedBox(height: 36),
+                            ControlledWidgetBuilder<UsernameController>(
+                                builder: (context, controller) {
+                              return KButton(
+                                mainText: DefaultTexts.signUp,
+                                onPressed: controller.isButtonDisabled
+                                    ? () {}
+                                    : controller.onButtonPressed,
+                                bgColor: controller.isButtonDisabled
+                                    ? kDisabled
+                                    : kPrimary,
+                                borderRadiusTopLeft: 32,
+                                borderRadiusTopRight: 32,
+                                borderRadiusBottomLeft: 32,
+                                borderRadiusBottomRight: 32,
+                                textStyle: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: size.height * 0.02),
-                  ],
-                ),
-              ),
-            ),
-            if (controller.isLoading)
-              Container(
-                height: size.height,
-                width: size.width,
-                color: kBlack.withOpacity(0.6),
-                child: Center(
-                  child: Lottie.asset(
-                    'assets/animations/loading.json',
+                    ],
                   ),
                 ),
               ),
-          ],
+            ],
+          ),
         );
       }),
     );
