@@ -21,11 +21,32 @@ class StoriesPresenter extends Presenter {
         );
 
   void getStories() {
-   
+    _getStories.execute(
+      _GetStoriesObserver(this),
+    );
   }
 
   @override
   void dispose() {
     _getStories.dispose();
+  }
+}
+
+class _GetStoriesObserver extends Observer<UnmodifiableListView<Story>?> {
+  final StoriesPresenter _presenter;
+
+  _GetStoriesObserver(this._presenter);
+
+  @override
+  void onComplete() {}
+
+  @override
+  void onError(error) {
+    _presenter.getStoriesOnError(error);
+  }
+
+  @override
+  void onNext(UnmodifiableListView<Story>? stories) {
+    _presenter.getStoriesOnNext(stories);
   }
 }
