@@ -36,4 +36,9 @@ class DefaultTexts {
       'Mã xác thực không đúng. Vui lòng đảm bảo bạn nhập đúng các số.';
 
   static String get addStory => 'Thêm story';
+
+  static String get post => 'Đăng';
+  static String get writeYourThoughts => 'Viết về suy nghĩ của bạn...';
+  static String get pickFromGallery => 'Chọn ảnh từ thư viện';
+  static String get pickFromCamera => 'Chụp ảnh từ camera';
 }

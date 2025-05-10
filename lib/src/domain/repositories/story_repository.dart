@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:chit_chat/src/domain/entities/story.dart';
 import 'package:chit_chat/src/domain/entities/story_item.dart';
 import 'package:chit_chat/src/domain/entities/user.dart';
 
@@ -10,4 +11,13 @@ abstract class StoryRepository {
     required User user,
     required StoryItem storyItem,
   });
+
+  Future<void> setStoryItemAsSeen(
+    User user,
+    String storyId,
+    String storyItemId,
+  );
+
+  Stream<UnmodifiableListView<Story>?> getStories(User user);
+  bool get allStoriesSeen;
 }
