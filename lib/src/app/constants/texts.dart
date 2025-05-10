@@ -34,6 +34,9 @@ class DefaultTexts {
       'Quá nhiều yêu cầu.\nVui lòng thử lại sau.';
   static String get wrongVerificationCode =>
       'Mã xác thực không đúng. Vui lòng đảm bảo bạn nhập đúng các số.';
+
+  static String get addStory => 'Thêm story';
+
   static String get post => 'Đăng';
   static String get writeYourThoughts => 'Viết về suy nghĩ của bạn...';
   static String get pickFromGallery => 'Chọn ảnh từ thư viện';
