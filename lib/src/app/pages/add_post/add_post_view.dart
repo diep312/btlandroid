@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/constants/constants.dart';
 import 'package:chit_chat/src/app/pages/add_post/add_post_controller.dart';
+import 'package:chit_chat/src/app/widgets/k_button.dart';
 import 'package:chit_chat/src/data/repositories/data_post_repository.dart';
 import 'package:chit_chat/src/data/repositories/data_user_repository.dart';
 import 'package:chit_chat/src/app/constants/texts.dart';
@@ -9,25 +12,41 @@ import 'package:chit_chat/src/app/constants/texts.dart';
 class AddPostView extends View {
   @override
   State<StatefulWidget> createState() => _AddPostViewState(
-        AddPostController(
-          DataPostRepository(),
-          DataUserRepository(),
-        ),
-      );
+    AddPostController(
+      DataPostRepository(),
+      DataUserRepository(),
+    ),
+  );
 }
 
 class _AddPostViewState extends ViewState<AddPostView, AddPostController> {
   _AddPostViewState(super.controller);
 
   final FocusNode _descFocusNode = FocusNode();
+  bool _isDescFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _descFocusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isDescFocused = _descFocusNode.hasFocus;
+    });
+  }
 
   @override
   void dispose() {
+    _descFocusNode.removeListener(_onFocusChange);
+    _descFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget get view {
+    Size size = MediaQuery.of(context).size;
     final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Scaffold(
@@ -51,7 +70,7 @@ class _AddPostViewState extends ViewState<AddPostView, AddPostController> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                                AssetImage('assets/icons/png/current_user.png'),
+                            AssetImage('assets/icons/png/current_user.png'),
                           ),
                           SizedBox(width: 10),
                           Column(
@@ -162,7 +181,66 @@ class _AddPostViewState extends ViewState<AddPostView, AddPostController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: [], // images from picker
+                      children: [
+                        if (controller.image != null)
+                          Container(
+                            margin: EdgeInsets.only(bottom: 12),
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              image: DecorationImage(
+                                image: FileImage(File(controller.image!.path)),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        // Align text and buttons to the left
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 4,
+                                offset: Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              KButton(
+                                mainText: DefaultTexts.pickFromGallery,
+                                onPressed: () {
+                                  controller.pickImage(true, size.width - 34);
+                                },
+                                height: 48,
+                                bgColor: Colors.white,
+                                borderColor: Colors.transparent,
+                                textStyle: k14w600ProxWhiteButtonText(
+                                    color: kSecondary),
+                                width: double.infinity,
+                              ),
+                              Divider(height: 1, color: Colors.grey.shade200),
+                              KButton(
+                                mainText: DefaultTexts.pickFromCamera,
+                                onPressed: () {
+                                  controller.pickImage(false, size.width - 34);
+                                },
+                                height: 48,
+                                bgColor: Colors.white,
+                                borderColor: Colors.transparent,
+                                textStyle: k14w600ProxWhiteButtonText(
+                                    color: kSecondary),
+                                width: double.infinity,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
