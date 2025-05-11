@@ -1,44 +1,79 @@
-
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
-import 'package:chit_chat/src/app/pages/add_post/add_post_presenter.dart';
-import 'package:chit_chat/src/domain/entities/user.dart';
+import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:chit_chat/src/domain/repositories/post_repository.dart';
 import 'package:chit_chat/src/domain/repositories/user_repository.dart';
+import 'package:chit_chat/src/domain/usecases/add_post.dart';
+import 'package:chit_chat/src/domain/usecases/get_current_user.dart';
+import 'package:chit_chat/src/domain/entities/user.dart';
 
-class AddPostController extends Controller {
-  final AddPostPresenter _presenter;
+class AddPostPresenter extends Presenter {
+  late Function addPostOnComplete;
+  late Function addPostOnError;
 
-  AddPostController(
+  late Function getCurrentUserOnNext;
+  late Function getCurrentUserOnError;
+
+  final AddPost _addPost;
+  final GetCurrentUser _getCurrentUser;
+
+  AddPostPresenter(
       PostRepository postRepository,
       UserRepository userRepository,
-  ) : _presenter = AddPostPresenter(
-    postRepository,
-    userRepository,
-  );
+      )   : _addPost = AddPost(postRepository, userRepository),
+        _getCurrentUser = GetCurrentUser(userRepository);
 
-  User? currentUser;
-  String description = '';
+  void addPost(Post post) {
+    _addPost.execute(
+      _AddPostObserver(this),
+      AddPostParams(post),
+    );
+  }
 
-  @override
-  void onInitState() {
-    super.onInitState();
+  void getCurrentUser() {
+    _getCurrentUser.execute(_GetCurrentUserObserver(this));
   }
 
   @override
-  void initListeners() {
+  void dispose() {
+    _addPost.dispose();
+    _getCurrentUser.dispose();
+  }
+}
 
+class _GetCurrentUserObserver extends Observer<User> {
+  final AddPostPresenter _presenter;
+
+  _GetCurrentUserObserver(this._presenter);
+
+  @override
+  void onComplete() {}
+
+  @override
+  void onError(error) {
+    _presenter.getCurrentUserOnError(error);
   }
 
-  void pickImage(bool isGallery, double size) async {
+  @override
+  void onNext(User? user) {
+    _presenter.getCurrentUserOnNext(user);
+  }
+}
 
+class _AddPostObserver extends Observer<void> {
+  final AddPostPresenter _presenter;
+
+  _AddPostObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.addPostOnComplete();
   }
 
-  void onDescriptionTyped(String text) {
-    description = text;
-    refreshUI();
+  @override
+  void onError(e) {
+    _presenter.addPostOnError(e);
   }
 
-  void onAddButtonPressed() async {
-
-  }
+  @override
+  void onNext(_) {}
 }
