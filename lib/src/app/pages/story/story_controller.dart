@@ -24,9 +24,14 @@ class StoryController extends Controller {
   sw.StoryController storyController = sw.StoryController();
 
   Story story;
+  StoryItem? currentStory;
   int initialIndex;
 
   bool isPopped = false;
+
+  bool isAdVisible = false;
+  bool isAdSeen = false;
+  bool pausedManually = false;
 
   @override
   void onDisposed() {
@@ -35,9 +40,15 @@ class StoryController extends Controller {
   }
 
   @override
-  void initListeners() {}
+  void initListeners() {
+    _presenter.setStoryItemAsSeenOnComplete = () {};
 
-  void setStoryAsSeen(String storyId, String storyItemId) {}
+    _presenter.setStoryItemAsSeenOnError = (e) {};
+  }
+
+  void setStoryAsSeen(String storyId, String storyItemId) {
+    _presenter.setStoryItemAsSeen(storyId, storyItemId);
+  }
 
   void closePage() {
     if (!isPopped) Navigator.of(getContext()).pop();

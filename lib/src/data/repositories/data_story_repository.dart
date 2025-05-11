@@ -29,6 +29,9 @@ class DataStoryRepository implements StoryRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
+  bool get allStoriesSeen => throw UnimplementedError();
+
+  @override
   Stream<UnmodifiableListView<Story>?> getStories(User user) {
     try {
       _stories = null;
@@ -104,6 +107,27 @@ class DataStoryRepository implements StoryRepository {
       }
 
       _streamController.add(UnmodifiableListView<Story>(_stories!));
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> setStoryItemAsSeen(
+      User user, String storyId, String storyItemId) async {
+    try {
+      _firestore.collection('users').doc(user.id).set({
+        'seenStoryItemIds': FieldValue.arrayUnion([storyItemId])
+      }, SetOptions(merge: true));
+
+      user.seenStoryItemIds.add(storyItemId);
+      _stories!
+          .firstWhere((element) => element.id == storyId)
+          .items
+          .firstWhere((element2) => element2.id == storyItemId)
+          .isSeen = true;
     } catch (e, st) {
       print(e);
       print(st);
