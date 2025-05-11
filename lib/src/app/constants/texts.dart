@@ -2,8 +2,8 @@ class DefaultTexts {
   // Navigation Bar
   static String get home => 'Trang chủ';
   static String get favs => 'Yêu thích';
-  static String get chats => 'Trò chuyện';
-  static String get users => 'Người dùng';
+  static String get chats => 'Tin nhắn';
+  static String get settings => 'Cài đặt';
   static String get okay => 'Đồng ý';
 
   static String get likes => 'Thích';
@@ -34,6 +34,13 @@ class DefaultTexts {
       'Quá nhiều yêu cầu.\nVui lòng thử lại sau.';
   static String get wrongVerificationCode =>
       'Mã xác thực không đúng. Vui lòng đảm bảo bạn nhập đúng các số.';
+
+  static String get explore => 'Khám phá';
+  static String get messages => 'Tin nhắn';
+  static String get favorites => 'Yêu thích';
+  static String get comments => 'Bình luận';
+  static String get addPost => 'Thêm bài viết';
+
   static String get post => 'Đăng';
   static String get writeYourThoughts => 'Viết về suy nghĩ của bạn...';
   static String get pickFromGallery => 'Chọn ảnh từ thư viện';
