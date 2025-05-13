@@ -139,22 +139,3 @@ class _CancelPostLikeObserver extends Observer<void> {
   @override
   void onNext(_) {}
 }
-
-class _TogglePostFavoriteStateObserver extends Observer<void> {
-  final HomePresenter _presenter;
-
-  _TogglePostFavoriteStateObserver(this._presenter);
-
-  @override
-  void onComplete() {
-    _presenter.toggleFavoriteStatusOnComplete();
-  }
-
-  @override
-  void onError(e) {
-    _presenter.toggleFavoriteStatusOnError(e);
-  }
-
-  @override
-  void onNext(_) {}
-}
