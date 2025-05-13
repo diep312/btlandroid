@@ -35,6 +35,12 @@ class DefaultTexts {
   static String get wrongVerificationCode =>
       'Mã xác thực không đúng. Vui lòng đảm bảo bạn nhập đúng các số.';
 
+  static String get explore => 'Khám phá';
+  static String get messages => 'Tin nhắn';
+  static String get favorites => 'Yêu thích';
+  static String get comments => 'Bình luận';
+  static String get addPost => 'Thêm bài viết';
+
   static String get addStory => 'Thêm story';
 
   static String get post => 'Đăng';
