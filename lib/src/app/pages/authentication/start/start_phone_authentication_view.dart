@@ -42,7 +42,8 @@ class _PhoneAuthenticationStartViewState extends ViewState<
             Column(
               children: [
                 KAppBar(
-                  header: 'Type Phone',
+                  header: DefaultTexts.startPhoneAuth,
+                  showNotification: false,
                 ),
                 Expanded(
                   child: CustomScrollView(

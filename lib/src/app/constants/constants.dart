@@ -5,7 +5,7 @@ import 'package:chit_chat/src/app/widgets/k_dialog.dart';
 
 const kPrimary = Color(0xFF05204A);
 const kSecondary = Color(0xFF136F63);
-const kBackground = Color(0xFFF9F9F9);
+const kBackground = Color(0xFFFFFFFF);
 const kWhite = Color(0xFFFFFFFF);
 const kBlack = Color(0xFF000000);
 
@@ -52,7 +52,7 @@ TextStyle k26w400AxiVermillionTimerText({Color color = kRed}) {
   return TextStyle(
     color: color,
     fontWeight: FontWeight.w400,
-    fontFamily: "Axiforma",
+    fontFamily: "Poppins",
     fontStyle: FontStyle.normal,
     fontSize: 26.0,
   );
@@ -65,7 +65,7 @@ TextStyle k20w900AxiWhiteHeader({
   return TextStyle(
     color: color,
     fontWeight: FontWeight.w900,
-    fontFamily: "Axiforma",
+    fontFamily: "Poppins",
     fontStyle: FontStyle.normal,
     height: lineHeight == null ? null : lineHeight / 20,
     fontSize: 20.0,
@@ -76,7 +76,7 @@ TextStyle k16w400AxiBlackText({Color color = kBlack}) {
   return TextStyle(
     color: color,
     fontWeight: FontWeight.w400,
-    fontFamily: "Axiforma",
+    fontFamily: "Poppins",
     fontStyle: FontStyle.normal,
     fontSize: 16.0,
   );
@@ -86,7 +86,7 @@ TextStyle k16w600AxiBlackText({Color color = kBlack}) {
   return TextStyle(
     color: color,
     fontWeight: FontWeight.w600,
-    fontFamily: "Axiforma",
+    fontFamily: "Poppins",
     fontStyle: FontStyle.normal,
     fontSize: 16.0,
   );
@@ -95,10 +95,10 @@ TextStyle k16w600AxiBlackText({Color color = kBlack}) {
 TextStyle k14w500AxiBlackButtonText({Color color = kBlack}) {
   return TextStyle(
       color: color,
-      fontWeight: FontWeight.w500,
-      fontFamily: "Axiforma",
+      fontWeight: FontWeight.w300,
+      fontFamily: "Poppins",
       fontStyle: FontStyle.normal,
-      fontSize: 14.0);
+      fontSize: 10.0);
 }
 
 TextStyle k14w700AxiBlackUnderlinedText({
@@ -109,7 +109,7 @@ TextStyle k14w700AxiBlackUnderlinedText({
   return TextStyle(
     color: color,
     fontWeight: FontWeight.w700,
-    fontFamily: "Axiforma",
+    fontFamily: "Poppins",
     fontStyle: FontStyle.normal,
     fontSize: 14.0,
     height: nullHeight ? null : 20 / 14,
@@ -124,7 +124,7 @@ TextStyle k14w400AxiBlackGeneralText({
   return TextStyle(
     color: color,
     fontWeight: FontWeight.w400,
-    fontFamily: "Axiforma",
+    fontFamily: "Poppins",
     fontStyle: FontStyle.normal,
     fontSize: 14.0,
     height: nullHeight ? 1.1 : 20 / 14,
@@ -135,7 +135,7 @@ TextStyle k14w600ProxWhiteButtonText({Color color = kWhite}) {
   return TextStyle(
       color: color,
       fontWeight: FontWeight.w600,
-      fontFamily: "ProximaNova",
+      fontFamily: "Poppins",
       fontStyle: FontStyle.normal,
       fontSize: 14.0);
 }
@@ -144,7 +144,7 @@ TextStyle k13w700AxiBerryHomeContentText({Color color = kSecondary}) {
   return TextStyle(
       color: color,
       fontWeight: FontWeight.w700,
-      fontFamily: "Axiforma",
+      fontFamily: "Poppins",
       fontStyle: FontStyle.normal,
       fontSize: 13.0);
 }
@@ -153,7 +153,7 @@ TextStyle k13w300AxiWhiteProfileHeaderText({Color color = kWhite}) {
   return TextStyle(
       color: color,
       fontWeight: FontWeight.w300,
-      fontFamily: "Axiforma",
+      fontFamily: "Poppins",
       fontStyle: FontStyle.normal,
       fontSize: 13.0);
 }
@@ -184,7 +184,7 @@ TextStyle k12w400AxiBlackLoading(
   return TextStyle(
     color: color,
     fontWeight: FontWeight.w400,
-    fontFamily: "Axiforma",
+    fontFamily: "Poppins",
     fontStyle: FontStyle.normal,
     fontSize: 12.0,
     decoration: !isUnderline ? TextDecoration.none : TextDecoration.underline,
@@ -199,7 +199,7 @@ TextStyle k10w400AxiBlackBottomText({
   return TextStyle(
       color: color,
       fontWeight: FontWeight.w400,
-      fontFamily: "Axiforma",
+      fontFamily: "Poppins",
       fontStyle: FontStyle.normal,
       fontSize: 10.0,
       height: lineHeight / 10,
@@ -211,7 +211,7 @@ TextStyle k10w300AxiBerryHomeShoppingHistoryContentText(
   return TextStyle(
       color: color,
       fontWeight: FontWeight.w300,
-      fontFamily: "Axiforma",
+      fontFamily: "Poppins",
       fontStyle: FontStyle.normal,
       fontSize: 10.0);
 }

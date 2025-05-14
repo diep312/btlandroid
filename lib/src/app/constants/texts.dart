@@ -2,8 +2,8 @@ class DefaultTexts {
   // Navigation Bar
   static String get home => 'Trang chủ';
   static String get favs => 'Yêu thích';
-  static String get chats => 'Trò chuyện';
-  static String get users => 'Người dùng';
+  static String get chats => 'Tin nhắn';
+  static String get settings => 'Cài đặt';
   static String get okay => 'Đồng ý';
 
   static String get likes => 'Thích';
@@ -34,4 +34,25 @@ class DefaultTexts {
       'Quá nhiều yêu cầu.\nVui lòng thử lại sau.';
   static String get wrongVerificationCode =>
       'Mã xác thực không đúng. Vui lòng đảm bảo bạn nhập đúng các số.';
+
+  static String get appName => 'ChitChat';
+  static String get welcomeTitle => 'Chào mừng đến với ChitChat';
+  static String get welcomeInstruction => 'Xin vui lòng chọn cách đăng nhập';
+  static String get loginWithGoogle => 'Đăng nhập bằng Google';
+  static String get loginWithPhone => 'Đăng nhập bằng điện thoại';
+
+  static String get explore => 'Khám phá';
+  static String get messages => 'Tin nhắn';
+  static String get favorites => 'Yêu thích';
+  static String get comments => 'Bình luận';
+  static String get addPost => 'Thêm bài viết';
+  static String get verifyPhone => 'Xác minh số điện thoại';
+  static String get startPhoneAuth => 'Bắt đầu xác thực';
+  static String get users => 'Người dùng';
+  static String get addStory => 'Thêm story';
+
+  static String get post => 'Đăng';
+  static String get writeYourThoughts => 'Viết về suy nghĩ của bạn...';
+  static String get pickFromGallery => 'Chọn ảnh từ thư viện';
+  static String get pickFromCamera => 'Chụp ảnh từ camera';
 }

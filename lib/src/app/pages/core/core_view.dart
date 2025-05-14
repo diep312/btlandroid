@@ -178,13 +178,17 @@ class _AddPostButton extends StatelessWidget {
         width: 64,
         height: 64,
         decoration: BoxDecoration(
-          color: kSecondary,
-          borderRadius: BorderRadius.circular(32),
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC466B), Color(0xFF3F5EFB)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
               offset: Offset(0, 4),
-              blurRadius: 9,
-              color: Colors.black12,
+              blurRadius: 12,
+              color: Colors.black26,
             ),
           ],
         ),
@@ -192,10 +196,10 @@ class _AddPostButton extends StatelessWidget {
           highlightColor: Colors.transparent,
           splashColor: Colors.transparent,
           onPressed: KNavigator.navigateToPostAdd,
-          icon: Image.asset(
-            'assets/icons/png/plus.png',
-            color: kWhite,
-            width: 25,
+          icon: Icon(
+            Icons.add,
+            color: Colors.white,
+            size: 32,
           ),
         ),
       ),

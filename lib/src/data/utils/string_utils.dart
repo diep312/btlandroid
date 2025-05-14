@@ -11,23 +11,23 @@ class StringUtils {
     } else if (difference.inDays > 8) {
       return DateFormat('d MMMM', 'tr_TR').format(date);
     } else if ((difference.inDays / 7).floor() >= 1) {
-      return "1h";
-    } else if (difference.inDays >= 2) {
-      return "${difference.inDays}g";
-    } else if (difference.inDays >= 1) {
-      return "1g";
-    } else if (difference.inHours >= 2) {
-      return "${difference.inHours}s";
-    } else if (difference.inHours >= 1) {
-      return "1s";
-    } else if (difference.inMinutes >= 2) {
-      return "${difference.inMinutes}d";
-    } else if (difference.inMinutes >= 1) {
       return "1d";
+    } else if (difference.inDays >= 2) {
+      return "${difference.inDays}d";
+    } else if (difference.inDays >= 1) {
+      return "1d";
+    } else if (difference.inHours >= 2) {
+      return "${difference.inHours}h";
+    } else if (difference.inHours >= 1) {
+      return "1h";
+    } else if (difference.inMinutes >= 2) {
+      return "${difference.inMinutes}m";
+    } else if (difference.inMinutes >= 1) {
+      return "1m";
     } else if (difference.inSeconds >= 3) {
-      return "${difference.inSeconds}sn";
+      return "${difference.inSeconds}s";
     } else {
-      return "1sn";
+      return "1s";
     }
   }
 
@@ -42,21 +42,21 @@ class StringUtils {
     } else if ((difference.inDays / 7).floor() >= 1) {
       return "1 Week Before";
     } else if (difference.inDays >= 2) {
-      return "${difference.inDays} Days Before";
+      return "${difference.inDays} ngày trước";
     } else if (difference.inDays >= 1) {
       return "1 Day Before";
     } else if (difference.inHours >= 2) {
-      return "${difference.inHours} Hours Before";
+      return "${difference.inHours} giờ trước";
     } else if (difference.inHours >= 1) {
       return "1 Hour Before";
     } else if (difference.inMinutes >= 2) {
-      return "${difference.inMinutes} Minutes Before";
+      return "${difference.inMinutes} phút trước";
     } else if (difference.inMinutes >= 1) {
       return "1 Minute Before";
     } else if (difference.inSeconds >= 3) {
-      return "${difference.inSeconds} Seconds Before";
+      return "${difference.inSeconds} giây trước";
     } else {
-      return "Recently";
+      return "Gần đây";
     }
   }
 

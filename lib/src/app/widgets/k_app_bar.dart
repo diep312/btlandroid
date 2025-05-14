@@ -8,17 +8,17 @@ import 'package:chit_chat/src/app/widgets/k_dialog.dart';
 
 class KAppBar extends StatelessWidget {
   final String header;
-  final bool close;
-  final bool back;
-  final bool exit;
-  final Function()? onPressed;
+  final bool showNotification;
+  final VoidCallback? onNotificationPressed;
+  final bool showBack;
+  final VoidCallback? onBack;
   const KAppBar({
     Key? key,
     required this.header,
-    this.close = false,
-    this.back = true,
-    this.onPressed,
-    this.exit = false,
+    this.showNotification = true,
+    this.onNotificationPressed,
+    this.showBack = false,
+    this.onBack,
   }) : super(key: key);
 
   @override
@@ -28,93 +28,55 @@ class KAppBar extends StatelessWidget {
 
     return Container(
       width: size.width,
-      height: 60 + padding.top,
-      child: Container(
-        padding: EdgeInsets.only(
-          top: padding.top,
-          left: 5,
-          right: 5,
-        ),
-        decoration: BoxDecoration(
-          color: kWhite,
-          boxShadow: kBoxShadow,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton(
-              style: ButtonStyle(
-                overlayColor: MaterialStateProperty.resolveWith(
-                    (_) => Colors.transparent),
-                padding: MaterialStateProperty.resolveWith(
-                  (_) => EdgeInsets.zero,
-                ),
+      height: 70 + padding.top,
+      color: Colors.white,
+      padding: EdgeInsets.only(
+        top: padding.top + 20,
+        left: 20,
+        right: 10,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (showBack)
+            Padding(
+              padding: const EdgeInsets.only(left: 24.0),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF23272F)),
+                onPressed: onBack,
               ),
-              child: SvgPicture.asset(
-                close
-                    ? 'assets/icons/svg/close.svg'
-                    : 'assets/icons/svg/arrow_back.svg',
-                color: back ? kSecondary : Colors.transparent,
-              ),
-              onPressed: onPressed != null
-                  ? onPressed
-                  : !back
-                      ? null
-                      : () {
-                          Navigator.pop(context);
-                        },
             ),
-            Text(
+          Expanded(
+            child: Text(
               header,
-              style: k20w900AxiWhiteHeader(
-                color: kSecondary,
-                lineHeight: 40,
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontFamily: 'Montserrat',
+                letterSpacing: -1.5,
               ),
+              textAlign: TextAlign.left,
             ),
-            TextButton(
-              style: ButtonStyle(
-                overlayColor: MaterialStateProperty.resolveWith(
-                    (_) => Colors.transparent),
-                padding: MaterialStateProperty.resolveWith(
-                  (_) => EdgeInsets.zero,
+          ),
+          if (showNotification)
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF1F4FB),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.notifications_none_rounded,
+                      color: Color(0xFF23272F)),
+                  onPressed: onNotificationPressed,
                 ),
               ),
-              child: !exit
-                  ? SvgPicture.asset(
-                      close
-                          ? 'assets/icons/svg/close.svg'
-                          : 'assets/icons/svg/arrow_back.svg',
-                      color: exit ? kSecondary : Colors.transparent,
-                    )
-                  : Icon(
-                      Icons.exit_to_app_rounded,
-                      color: kSecondary,
-                    ),
-              onPressed: exit
-                  ? () async {
-                      bool? response = await showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (context) => KDialog(
-                          header: 'You are leaving the app',
-                          imagePath:
-                              'assets/images/svg/dialog-generic-error.svg',
-                          content: '',
-                          button1Text: 'No',
-                          button2Text: 'Yes',
-                        ),
-                      );
-                      if (response == null || response) return;
-
-                      await FirebaseAuth.instance.signOut();
-                      Future.delayed(Duration.zero).then((value) =>
-                          KNavigator.navigateToSplash(CoreViewHolderController()
-                              .coreViewHolderContext));
-                    }
-                  : () {},
-            ),
-          ],
-        ),
+            )
+          else
+            const SizedBox(width: 56), // For symmetry if no notification
+        ],
       ),
     );
   }

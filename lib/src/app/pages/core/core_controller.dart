@@ -5,7 +5,8 @@ import 'package:chit_chat/src/app/pages/chats/chats_view.dart';
 import 'package:chit_chat/src/app/pages/core/core_presenter.dart';
 import 'package:chit_chat/src/app/pages/favorites/favorites_view.dart';
 import 'package:chit_chat/src/app/pages/home/home_view.dart';
-import 'package:chit_chat/src/app/pages/users/users_view.dart';
+import 'package:chit_chat/src/app/pages/profile/profile_view.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class CoreController extends Controller {
   final CorePresenter _presenter;
@@ -40,7 +41,7 @@ class CoreController extends Controller {
     {'text': DefaultTexts.favs, 'iconPath': 'star.svg'},
     {'text': '', 'iconPath': ''},
     {'text': DefaultTexts.chats, 'iconPath': 'chat.svg'},
-    {'text': DefaultTexts.users, 'iconPath': 'nav-profile.svg'},
+    {'text': DefaultTexts.settings, 'iconPath': 'nav-profile.svg'},
   ];
 
   void killInstance() {
@@ -50,6 +51,7 @@ class CoreController extends Controller {
   @override
   void onInitState() {
     selectedIndex = 0;
+    final currentUserId = auth.FirebaseAuth.instance.currentUser?.uid ?? '';
     pages = [
       Navigator(
         key: homePageKey,
@@ -69,7 +71,14 @@ class CoreController extends Controller {
       ),
       Navigator(
         key: usersPageKey,
-        pages: [MaterialPage(child: UsersViewHolder())],
+        pages: [
+          MaterialPage(
+            child: ProfileView(
+              userId: currentUserId,
+              currentUserId: currentUserId,
+            ),
+          )
+        ],
         onPopPage: (route, result) => route.didPop(result),
       ),
     ];
