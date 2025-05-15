@@ -13,12 +13,13 @@ class AddStoryController extends Controller {
   final AddStoryPresenter _presenter;
 
   AddStoryController(
-      StoryRepository storyRepository,
-      UserRepository userRepository,
-      ) : _presenter = AddStoryPresenter(
-    storyRepository,
-    userRepository,
-  );
+    StoryRepository storyRepository,
+    UserRepository userRepository,
+  ) : _presenter = AddStoryPresenter(
+          storyRepository,
+          userRepository,
+        );
+
 
   XFile? image;
   ImagePicker imagePicker = ImagePicker();

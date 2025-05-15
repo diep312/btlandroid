@@ -56,8 +56,10 @@ class _PhoneAuthenticationVerifyViewState extends ViewState<
               child: Column(
                 children: [
                   KAppBar(
-                    header: 'Type Code',
-                    onPressed: () {
+                    header: DefaultTexts.verifyPhone,
+                    showNotification: false,
+                    showBack: true,
+                    onBack: () {
                       controller.manualCancel = true;
                       if (controller.startPhoneVerificationEnum == null ||
                           controller.startPhoneVerificationEnum ==

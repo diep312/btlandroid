@@ -1,16 +1,19 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:chit_chat/src/app/pages/add_post/add_post_view.dart';
 import 'package:chit_chat/src/app/pages/add_story/add_story_view.dart';
 import 'package:chit_chat/src/app/pages/authentication/decider/auth_decider_view.dart';
 import 'package:chit_chat/src/app/pages/authentication/start/start_phone_authentication_view.dart';
 import 'package:chit_chat/src/app/pages/authentication/verify/verify_phone_number_view.dart';
 import 'package:chit_chat/src/app/pages/chat/chat_view.dart';
+import 'package:chit_chat/src/app/pages/comments/comments_bottom_sheet.dart';
 import 'package:chit_chat/src/app/pages/comments/comments_view.dart';
 import 'package:chit_chat/src/app/pages/core/core_controller.dart';
 import 'package:chit_chat/src/app/pages/core/core_view.dart';
 import 'package:chit_chat/src/app/pages/splash/splash_view.dart';
 import 'package:chit_chat/src/app/pages/username/username_view.dart';
 import 'package:chit_chat/src/domain/entities/user.dart';
+import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:page_transition/page_transition.dart';
 
 class KNavigator {
@@ -30,9 +33,11 @@ class KNavigator {
 
   static Future<void> navigateToComments(
       BuildContext context, String postId) async {
-    await Navigator.push(
-      context,
-      CupertinoPageRoute(builder: (context) => CommentsView(postId)),
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CommentsBottomSheet(postId),
     );
   }
 
@@ -103,6 +108,14 @@ class KNavigator {
     await Navigator.push(
       CoreController().coreContext,
       CupertinoPageRoute(builder: (context) => ChatView(user)),
+    );
+  }
+
+  static void navigateToEditPost(BuildContext context, Post post) {
+    Navigator.pushNamed(
+      context,
+      '/edit-post',
+      arguments: post,
     );
   }
 }

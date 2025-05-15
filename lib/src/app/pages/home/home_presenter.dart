@@ -8,6 +8,8 @@ import 'package:chit_chat/src/domain/usecases/cancel_post_like.dart';
 import 'package:chit_chat/src/domain/usecases/get_next_posts.dart';
 import 'package:chit_chat/src/domain/usecases/get_posts.dart';
 import 'package:chit_chat/src/domain/usecases/like_post.dart';
+import 'package:chit_chat/src/domain/usecases/toggle_post_favorite_state.dart';
+import 'package:chit_chat/src/domain/usecases/delete_post.dart';
 
 class HomePresenter extends Presenter {
   late Function getPostsOnNext;
@@ -25,16 +27,29 @@ class HomePresenter extends Presenter {
   late Function toggleFavoriteStatusOnComplete;
   late Function toggleFavoriteStatusOnError;
 
+  late Function deletePostOnComplete;
+  late Function deletePostOnError;
+
+
   final GetPosts _getPosts;
   final CancelPostLike _cancelPostLike;
   final LikePost _likePost;
   final GetNextPosts _getNextPosts;
 
+  final TogglePostFavoriteStatus _togglePostFavoriteStatus;
+  final DeletePost _deletePost;
+
   HomePresenter(PostRepository postRepository, UserRepository userRepository)
       : _getPosts = GetPosts(postRepository, userRepository),
         _likePost = LikePost(postRepository),
         _cancelPostLike = CancelPostLike(postRepository),
-        _getNextPosts = GetNextPosts(postRepository);
+        _togglePostFavoriteStatus = TogglePostFavoriteStatus(
+          postRepository,
+          userRepository,
+        ),
+        _getNextPosts = GetNextPosts(postRepository),
+        _deletePost = DeletePost(postRepository);
+
 
   void getPosts() {
     _getPosts.execute(
@@ -48,11 +63,29 @@ class HomePresenter extends Presenter {
 
   void cancelPostLike(String postId) {
     _cancelPostLike.execute(
-        _CancelPostLikeObserver(this), CancelPostLikeParams(postId));
+      _CancelPostLikeObserver(this),
+      CancelPostLikeParams(postId),
+    );
   }
 
   void getNextPosts() {
-    _getNextPosts.execute(_GetNextPostsObserver(this));
+    _getNextPosts.execute(
+      _GetNextPostsObserver(this),
+    );
+  }
+
+  void toggleFavoriteState(Post post) {
+    _togglePostFavoriteStatus.execute(
+      _TogglePostFavoriteStatusObserver(this),
+      TogglePostFavoriteStatusParams(post.id, !post.isFavorited),
+    );
+  }
+
+  void deletePost(String postId) {
+    _deletePost.execute(
+      _DeletePostObserver(this),
+      DeletePostParams(postId),
+    );
   }
 
   @override
@@ -61,6 +94,9 @@ class HomePresenter extends Presenter {
     _likePost.dispose();
     _cancelPostLike.dispose();
     _getNextPosts.dispose();
+    _togglePostFavoriteStatus.dispose();
+    _deletePost.dispose();
+
   }
 }
 
@@ -81,25 +117,6 @@ class _GetPostsObserver extends Observer<UnmodifiableListView<Post>?> {
   void onNext(UnmodifiableListView<Post>? response) {
     _presenter.getPostsOnNext(response);
   }
-}
-
-class _GetNextPostsObserver extends Observer<void> {
-  final HomePresenter _presenter;
-
-  _GetNextPostsObserver(this._presenter);
-
-  @override
-  void onComplete() {
-    _presenter.getNextPostsOnComplete();
-  }
-
-  @override
-  void onError(e) {
-    _presenter.getNextPostsOnError(e);
-  }
-
-  @override
-  void onNext(_) {}
 }
 
 class _LikePostObserver extends Observer<void> {
@@ -134,6 +151,83 @@ class _CancelPostLikeObserver extends Observer<void> {
   @override
   void onError(e) {
     _presenter.cancelPostLikeOnError(e);
+  }
+
+  @override
+  void onNext(_) {}
+}
+
+
+class _GetNextPostsObserver extends Observer<void> {
+  final HomePresenter _presenter;
+
+  _GetNextPostsObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.getNextPostsOnComplete();
+  }
+
+  @override
+  void onError(e) {
+    _presenter.getNextPostsOnError(e);
+  }
+
+  @override
+  void onNext(_) {}
+}
+
+
+class _TogglePostFavoriteStatusObserver extends Observer<void> {
+  final HomePresenter _presenter;
+
+  _TogglePostFavoriteStatusObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.toggleFavoriteStatusOnComplete();
+
+class _LikePostObserver extends Observer<void> {
+  final HomePresenter _presenter;
+
+  _LikePostObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.likePostOnComplete();
+  }
+
+  @override
+  void onError(e) {
+    _presenter.toggleFavoriteStatusOnError(e);
+
+  }
+
+  @override
+  void onNext(_) {}
+}
+
+class _DeletePostObserver extends Observer<void> {
+  final HomePresenter _presenter;
+
+  _DeletePostObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.deletePostOnComplete();
+class _CancelPostLikeObserver extends Observer<void> {
+  final HomePresenter _presenter;
+
+  _CancelPostLikeObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.cancelPostLikeOnComplete();
+  }
+
+  @override
+  void onError(e) {
+    _presenter.deletePostOnError(e);
   }
 
   @override

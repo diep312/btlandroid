@@ -25,9 +25,9 @@ class KButton extends StatelessWidget {
     this.textStyle = const TextStyle(
       color: kWhite,
       fontWeight: FontWeight.w600,
-      fontFamily: "ProximaNova",
+      fontFamily: "Montserrat",
       fontStyle: FontStyle.normal,
-      fontSize: 14.0,
+      fontSize: 12.0,
     ),
     required this.onPressed,
     this.bgColor = kPrimary,
@@ -36,10 +36,10 @@ class KButton extends StatelessWidget {
     this.iconPath = '',
     this.width,
     this.height,
-    this.borderRadiusBottomRight = 9,
-    this.borderRadiusBottomLeft = 9,
-    this.borderRadiusTopLeft = 9,
-    this.borderRadiusTopRight = 9,
+    this.borderRadiusBottomRight = 100,
+    this.borderRadiusBottomLeft = 100,
+    this.borderRadiusTopLeft = 100,
+    this.borderRadiusTopRight = 100,
     this.iconColor,
   });
 

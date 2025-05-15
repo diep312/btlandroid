@@ -25,7 +25,8 @@ class AddPost extends UseCase<void, AddPostParams> {
 
       await _postRepository.addPost(params.post);
       controller.close();
-    } catch (error) {
+    } catch (error, stackTrace) {
+
       controller.addError(error);
     }
     return controller.stream;

@@ -5,11 +5,17 @@ import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/constants/constants.dart';
 import 'package:chit_chat/src/app/pages/add_story/add_story_controller.dart';
 import 'package:chit_chat/src/app/widgets/k_button.dart';
+import 'package:chit_chat/src/data/repositories/data_story_repository.dart';
+import 'package:chit_chat/src/data/repositories/data_user_repository.dart';
+
 
 class AddStoryView extends View {
   @override
   State<StatefulWidget> createState() => _AddStoryViewState(
-        AddStoryController()
+        AddStoryController(
+          DataStoryRepository(),
+          DataUserRepository(),
+        ),
       );
 }
 

@@ -3,6 +3,8 @@ import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/constants/constants.dart';
 import 'package:chit_chat/src/app/navigator/navigator.dart';
 import 'package:chit_chat/src/app/pages/home/home_controller.dart';
+import 'package:chit_chat/src/app/pages/stories/stories_view.dart';
+
 import 'package:chit_chat/src/app/widgets/k_app_bar.dart';
 import 'package:chit_chat/src/app/widgets/k_post.dart';
 import 'package:chit_chat/src/data/repositories/data_post_repository.dart';
@@ -67,7 +69,9 @@ class _HomeViewState extends ViewState<_HomeView, HomeController> {
                   );
                 },
                 child: KAppBar(
-                  header: DefaultTexts.explore
+                  header: DefaultTexts.explore,
+                  showNotification: true,
+                  onNotificationPressed: () {/* ... */},
                 ),
               ),
               Expanded(
@@ -89,6 +93,10 @@ class _HomeViewState extends ViewState<_HomeView, HomeController> {
                       Container(
                         width: size.width,
                         height: 120,
+                        child: StoriesViewHolder(
+                          refresh: controller.refreshStreamController.stream,
+                        ),
+
                       ),
                       SizedBox(height: 10),
                       !controller.postsInitialized
@@ -118,6 +126,9 @@ class _HomeViewState extends ViewState<_HomeView, HomeController> {
                                         },
                                         toggleFavoriteState:
                                             controller.togglePostFavoriteState,
+                                        onEdit: controller.editPost,
+                                        onDelete: controller.deletePost,
+
                                         showAnimation:
                                             controller.lastLikedPost ==
                                                 controller.posts[i].id,

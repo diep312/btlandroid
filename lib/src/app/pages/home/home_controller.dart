@@ -14,12 +14,13 @@ class HomeController extends Controller {
   final HomePresenter _presenter;
 
   HomeController(
-      PostRepository postRepository,
-      UserRepository userRepository,
-      ) : _presenter = HomePresenter(
-    postRepository,
-    userRepository,
-  );
+    PostRepository postRepository,
+    UserRepository userRepository,
+  ) : _presenter = HomePresenter(
+          postRepository,
+          userRepository,
+        );
+
 
   UnmodifiableListView<Post> posts = UnmodifiableListView([]);
   List<String>? watchlist;
@@ -32,7 +33,8 @@ class HomeController extends Controller {
   ScrollController scrollController = ScrollController();
 
   StreamController<bool?> refreshStreamController =
-  StreamController.broadcast();
+      StreamController.broadcast();
+
 
   @override
   void onInitState() {
@@ -77,6 +79,17 @@ class HomeController extends Controller {
     _presenter.getNextPostsOnComplete = () {};
 
     _presenter.getNextPostsOnError = (e) {};
+
+    _presenter.toggleFavoriteStatusOnComplete = () {};
+
+    _presenter.toggleFavoriteStatusOnError = (e) {};
+
+    _presenter.deletePostOnComplete = () {
+      getPosts(); // Refresh posts after deletion
+    };
+
+    _presenter.deletePostOnError = (e) {};
+
   }
 
   void changePostLike(Post post) async {
@@ -96,12 +109,13 @@ class HomeController extends Controller {
     }
   }
 
-  void togglePostFavoriteState(Post post) {
-
-  }
-
   void getNextPosts() {
     if (!isAllPostsFetched) _presenter.getNextPosts();
+  }
+
+  void togglePostFavoriteState(Post post) {
+    _presenter.toggleFavoriteState(post);
+
   }
 
   void getPosts() {
@@ -112,4 +126,34 @@ class HomeController extends Controller {
     refreshUI();
     _presenter.getPosts();
   }
+
+  void editPost(Post post) {
+    // Navigate to edit post page
+    KNavigator.navigateToEditPost(getContext(), post);
+  }
+
+  void deletePost(Post post) {
+    // Show confirmation dialog
+    showDialog(
+      context: getContext(),
+      builder: (context) => AlertDialog(
+        title: Text('Delete Post'),
+        content: Text('Are you sure you want to delete this post?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _presenter.deletePost(post.id);
+            },
+            child: Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

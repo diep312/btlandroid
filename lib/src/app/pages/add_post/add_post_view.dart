@@ -4,19 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/constants/constants.dart';
 import 'package:chit_chat/src/app/pages/add_post/add_post_controller.dart';
+import 'package:chit_chat/src/app/widgets/k_app_bar.dart';
 import 'package:chit_chat/src/app/widgets/k_button.dart';
+import 'package:chit_chat/src/app/widgets/k_textformfield.dart';
+import 'package:chit_chat/src/data/helpers/validator_helper.dart';
 import 'package:chit_chat/src/data/repositories/data_post_repository.dart';
 import 'package:chit_chat/src/data/repositories/data_user_repository.dart';
 import 'package:chit_chat/src/app/constants/texts.dart';
+import 'package:chit_chat/src/domain/entities/user.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+
 
 class AddPostView extends View {
   @override
   State<StatefulWidget> createState() => _AddPostViewState(
-    AddPostController(
-      DataPostRepository(),
-      DataUserRepository(),
-    ),
-  );
+        AddPostController(
+          DataPostRepository(),
+          DataUserRepository(),
+        ),
+      );
 }
 
 class _AddPostViewState extends ViewState<AddPostView, AddPostController> {
@@ -70,7 +76,7 @@ class _AddPostViewState extends ViewState<AddPostView, AddPostController> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                            AssetImage('assets/icons/png/current_user.png'),
+                                AssetImage('assets/icons/png/current_user.png'),
                           ),
                           SizedBox(width: 10),
                           Column(

@@ -11,12 +11,13 @@ class AddStoryPresenter extends Presenter {
   final AddStory _addStory;
 
   AddStoryPresenter(
-      StoryRepository storyRepository,
-      UserRepository userRepository,
-      ) : _addStory = AddStory(
-    storyRepository,
-    userRepository,
-  );
+    StoryRepository storyRepository,
+    UserRepository userRepository,
+  ) : _addStory = AddStory(
+          storyRepository,
+          userRepository,
+        );
+
 
   void addStory(StoryItem storyItem) {
     _addStory.execute(

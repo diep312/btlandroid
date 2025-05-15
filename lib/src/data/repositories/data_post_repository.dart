@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:chit_chat/src/domain/entities/comment.dart';
 import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:chit_chat/src/domain/entities/user.dart';
 import 'package:collection/collection.dart';
@@ -17,19 +18,29 @@ class DataPostRepository implements PostRepository {
   }
 
   StreamController<UnmodifiableListView<Post>?> _postsStreamController =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   StreamController<UnmodifiableListView<Post>?>
-  _favoritedPostsStreamController = StreamController.broadcast();
+      _favoritedPostsStreamController = StreamController.broadcast();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  final StreamController<UnmodifiableListView<Comment>?>
+      _commentsStreamController = StreamController.broadcast();
+
+  QueryDocumentSnapshot<Map<String, dynamic>>? _lastCommentDocument;
   QueryDocumentSnapshot<Map<String, dynamic>>? _lastPostDocument;
 
+  List<Comment>? comments;
+
+  
   List<Post>? _posts;
   List<Post> _favoritedPosts = [];
   Set<String> likedPostIds = {};
   Set<String> favoritesPostIds = {};
+
+  bool isFavoritePostsInitialized = false;
+
 
   @override
   void killInstance() {
@@ -62,7 +73,7 @@ class DataPostRepository implements PostRepository {
       }
 
       Post? favoritePost =
-      _favoritedPosts.firstWhereOrNull((post) => post.id == postId);
+          _favoritedPosts.firstWhereOrNull((post) => post.id == postId);
 
       if (favoritePost != null) {
         favoritePost.numberOfLikes++;
@@ -114,7 +125,8 @@ class DataPostRepository implements PostRepository {
       }
 
       Post? favoritePost =
-      _favoritedPosts.firstWhereOrNull((post) => post.id == postId);
+          _favoritedPosts.firstWhereOrNull((post) => post.id == postId);
+
 
       if (favoritePost != null) {
         favoritePost.numberOfLikes--;
@@ -164,27 +176,28 @@ class DataPostRepository implements PostRepository {
         _lastPostDocument = querySnapshot.docs.last;
 
         await Future.forEach(querySnapshot.docs,
-                (QueryDocumentSnapshot<Map<String, dynamic>> element) async {
-              Post post = Post.fromJson(element.data(), element.id);
+            (QueryDocumentSnapshot<Map<String, dynamic>> element) async {
+          Post post = Post.fromJson(element.data(), element.id);
 
-              final snapshot = await _firestore
-                  .collection('commentCounts')
-                  .doc(element.id)
-                  .get();
+          final snapshot = await _firestore
+              .collection('commentCounts')
+              .doc(element.id)
+              .get();
 
-              if (snapshot.data() != null) {
-                post.numberOfComments = snapshot.data()!['total'];
-              }
+          if (snapshot.data() != null) {
+            post.numberOfComments = snapshot.data()!['total'];
+          }
 
-              if (likedPostIds.contains(element.id)) {
-                post.isLiked = true;
-              }
+          if (likedPostIds.contains(element.id)) {
+            post.isLiked = true;
+          }
 
-              if (favoritesPostIds.contains(element.id)) {
-                post.isFavorited = true;
-              }
-              _posts!.add(post);
-            });
+          if (favoritesPostIds.contains(element.id)) {
+            post.isFavorited = true;
+          }
+          _posts!.add(post);
+        });
+
       }
 
       _posts!.sort((a, b) => b.publishedOn.compareTo(a.publishedOn));
@@ -225,52 +238,6 @@ class DataPostRepository implements PostRepository {
     }
   }
 
-  void _initPosts() async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-          .collection('posts')
-          .orderBy('publishedOn', descending: true)
-          .limit(5)
-          .get();
-
-      _posts ??= [];
-
-      if (querySnapshot.docs.isNotEmpty) {
-        _lastPostDocument = querySnapshot.docs.last;
-
-        await Future.forEach(querySnapshot.docs,
-                (QueryDocumentSnapshot<Map<String, dynamic>> element) async {
-              Post post = Post.fromJson(element.data(), element.id);
-
-              final snapshot = await _firestore
-                  .collection('commentCounts')
-                  .doc(element.id)
-                  .get();
-
-              if (snapshot.data() != null) {
-                post.numberOfComments = snapshot.data()!['total'];
-              }
-
-              if (likedPostIds.contains(element.id)) {
-                post.isLiked = true;
-              }
-
-              if (favoritesPostIds.contains(element.id)) {
-                post.isFavorited = true;
-              }
-              _posts!.add(post);
-            });
-      }
-
-      _posts!.sort((a, b) => b.publishedOn.compareTo(a.publishedOn));
-
-      _postsStreamController.add(UnmodifiableListView(_posts!));
-    } catch (e, st) {
-      print(e);
-      print(st);
-      rethrow;
-    }
-  }
 
   @override
   Future<void> addPost(Post post) async {
@@ -291,4 +258,372 @@ class DataPostRepository implements PostRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<void> addComment(Comment comment) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('comments')
+          .add((comment).toJson());
+
+      Comment _comment = Comment(
+        id: doc.id,
+        authorId: comment.authorId,
+        authorName: comment.authorName,
+        sharedOn: comment.sharedOn,
+        targetId: comment.targetId,
+        text: comment.text,
+      );
+
+      _firestore.collection('commentCounts').doc(comment.targetId).set(
+        {
+          'total': FieldValue.increment(1),
+        },
+        SetOptions(merge: true),
+      );
+
+      Post? post =
+          _posts!.firstWhereOrNull((element) => element.id == comment.targetId);
+
+      if (post != null) {
+        post.numberOfComments++;
+      }
+
+      Post? favPost = _favoritedPosts
+          .firstWhereOrNull((element) => element.id == comment.targetId);
+
+      if (favPost != null) {
+        favPost.numberOfComments++;
+      }
+      comments ??= [];
+
+      comments!.add(_comment);
+
+      comments!.sort((a, b) => b.sharedOn.compareTo(a.sharedOn));
+
+      _commentsStreamController.add(UnmodifiableListView(comments!));
+      _postsStreamController.add(UnmodifiableListView(_posts!));
+      _favoritedPostsStreamController
+          .add(UnmodifiableListView(_favoritedPosts));
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Stream<UnmodifiableListView<Comment>?> getComments(String targetId) {
+    try {
+      comments = null;
+      _lastCommentDocument = null;
+
+      _initComments(targetId);
+
+      Future.delayed(Duration.zero).then((_) {
+        if (comments == null) {
+          _commentsStreamController.add(null);
+        } else {
+          comments!.sort((a, b) => b.sharedOn.compareTo(a.sharedOn));
+
+          _commentsStreamController.add(UnmodifiableListView(comments!));
+        }
+      });
+
+      return _commentsStreamController.stream;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  void _initPosts() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('posts')
+          .orderBy('publishedOn', descending: true)
+          .limit(5)
+          .get();
+
+      _posts ??= [];
+
+      if (querySnapshot.docs.isNotEmpty) {
+        _lastPostDocument = querySnapshot.docs.last;
+
+        await Future.forEach(querySnapshot.docs,
+            (QueryDocumentSnapshot<Map<String, dynamic>> element) async {
+          Post post = Post.fromJson(element.data(), element.id);
+
+          final snapshot = await _firestore
+              .collection('commentCounts')
+              .doc(element.id)
+              .get();
+
+          if (snapshot.data() != null) {
+            post.numberOfComments = snapshot.data()!['total'];
+          }
+
+          if (likedPostIds.contains(element.id)) {
+            post.isLiked = true;
+          }
+
+          if (favoritesPostIds.contains(element.id)) {
+            post.isFavorited = true;
+          }
+          _posts!.add(post);
+        });
+
+      }
+
+      _posts!.sort((a, b) => b.publishedOn.compareTo(a.publishedOn));
+
+      _postsStreamController.add(UnmodifiableListView(_posts!));
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  void _initComments(String targetId) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('comments')
+          .where('targetId', isEqualTo: targetId)
+          .orderBy('sharedOn', descending: true)
+          .limit(10)
+          .get();
+
+      comments ??= [];
+
+      if (querySnapshot.docs.isNotEmpty) {
+        _lastCommentDocument = querySnapshot.docs.last;
+
+        querySnapshot.docs.forEach((doc) {
+          comments!.add(Comment.fromJson(doc));
+        });
+      }
+
+      comments!.sort((a, b) => b.sharedOn.compareTo(a.sharedOn));
+
+      _commentsStreamController.add(UnmodifiableListView(comments!));
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> getNextComments(String targetId) async {
+    try {
+      if (_lastCommentDocument == null) {
+        _commentsStreamController.add(UnmodifiableListView([]));
+
+        return true;
+      }
+
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('comments')
+          .where('targetId', isEqualTo: targetId)
+          .limit(10)
+          .orderBy('sharedOn', descending: true)
+          .startAfterDocument(_lastCommentDocument!)
+          .get();
+
+      comments ??= [];
+
+      if (querySnapshot.docs.isNotEmpty) {
+        _lastCommentDocument = querySnapshot.docs.last;
+
+        querySnapshot.docs.forEach((doc) {
+          comments!.add(Comment.fromJson(doc));
+        });
+
+        comments!.sort((a, b) => b.sharedOn.compareTo(a.sharedOn));
+
+        _commentsStreamController.add(UnmodifiableListView(comments!));
+        return false;
+      } else {
+        _commentsStreamController.add(UnmodifiableListView(comments!));
+        return true;
+      }
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeComment(String postId, String commentId) async {
+    try {
+      await _firestore.collection('comments').doc(commentId).delete();
+
+      await _firestore.collection('commentCounts').doc(postId).update({
+        'total': FieldValue.increment(-1),
+      });
+
+      comments!.removeWhere((element) => element.id == commentId);
+
+      Post? post = _posts!.firstWhereOrNull((element) => element.id == postId);
+
+      if (post != null) {
+        post.numberOfComments--;
+      }
+
+      Post? favPost =
+          _favoritedPosts.firstWhereOrNull((element) => element.id == postId);
+
+      if (favPost != null) {
+        favPost.numberOfComments--;
+      }
+
+      comments!.sort((a, b) => b.sharedOn.compareTo(a.sharedOn));
+
+      _postsStreamController.add(UnmodifiableListView(_posts!));
+
+      _commentsStreamController.add(UnmodifiableListView(comments!));
+      _favoritedPostsStreamController
+          .add(UnmodifiableListView(_favoritedPosts));
+
+      return null;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> toggleFavoriteState({
+    required String uid,
+    required String postId,
+    required bool favorite,
+  }) async {
+    try {
+      await _firestore.collection('users').doc(uid).set({
+        'favoritedPostIds': favorite
+            ? FieldValue.arrayUnion(
+                [postId],
+              )
+            : FieldValue.arrayRemove([postId]),
+      }, SetOptions(merge: true));
+
+      if (favorite) {
+        Post post = _posts!.firstWhere((element) => element.id == postId);
+        post.isFavorited = true;
+
+        Post favoritedPost = post.copy();
+        favoritesPostIds.add(postId);
+        _favoritedPosts.add(favoritedPost);
+      } else {
+        Post? post =
+            _posts!.firstWhereOrNull((element) => element.id == postId);
+
+        if (post != null) {
+          post.isFavorited = false;
+        }
+
+        _favoritedPosts.removeWhere((element) => element.id == post!.id);
+
+        favoritesPostIds.remove(postId);
+      }
+
+      _favoritedPostsStreamController
+          .add(UnmodifiableListView(_favoritedPosts));
+
+
+      _postsStreamController.add(UnmodifiableListView(_posts!));
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Stream<UnmodifiableListView<Post>?> getFavoritedPosts(User user) {
+    try {
+      _initFavoritedPosts();
+
+      Future.delayed(Duration.zero).then((_) {
+        if (!isFavoritePostsInitialized) {
+          _favoritedPostsStreamController.add(null);
+        } else {
+          _favoritedPosts
+              .sort((a, b) => b.publishedOn.compareTo(a.publishedOn));
+
+          _favoritedPostsStreamController
+              .add(UnmodifiableListView(_favoritedPosts));
+        }
+      });
+
+      return _favoritedPostsStreamController.stream;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  void _initFavoritedPosts() async {
+    try {
+      await Future.forEach(favoritesPostIds, (String element) async {
+        final doc = await _firestore.collection('posts').doc(element).get();
+
+        if (doc.data() != null) {
+          Post post = Post.fromJson(doc.data()!, doc.id);
+          if (_favoritedPosts.indexWhere((element) => element.id == post.id) ==
+              -1) {
+            post.isFavorited = true;
+            final snapshot =
+                await _firestore.collection('commentCounts').doc(post.id).get();
+
+            if (snapshot.data() != null) {
+              post.numberOfComments = snapshot.data()!['total'];
+            }
+            if (likedPostIds.contains(post.id)) {
+              post.isLiked = true;
+            }
+            _favoritedPosts.add(post);
+          }
+        }
+      });
+
+      _favoritedPostsStreamController
+          .add(UnmodifiableListView(_favoritedPosts));
+
+      isFavoritePostsInitialized = true;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deletePost(String postId) async {
+    try {
+      // Delete the post from Firestore
+      await _firestore.collection('posts').doc(postId).delete();
+
+      // Remove the post from the local list
+      _posts?.removeWhere((post) => post.id == postId);
+      _favoritedPosts.removeWhere((post) => post.id == postId);
+
+      // Update the streams
+      if (_posts != null) {
+        _postsStreamController.add(UnmodifiableListView(_posts!));
+      }
+      _favoritedPostsStreamController
+          .add(UnmodifiableListView(_favoritedPosts));
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
 }

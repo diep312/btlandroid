@@ -7,12 +7,17 @@ import 'package:chit_chat/src/data/utils/string_utils.dart';
 import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:chit_chat/src/app/widgets/post_options_bottom_sheet.dart';
+
 
 class KPost extends StatelessWidget {
   final Post post;
   final Function(Post post) changePostLike;
   final Function(Post post) toggleFavoriteState;
   final Function(BuildContext context, Post post) navigateToComments;
+  final Function(Post post) onEdit;
+  final Function(Post post) onDelete;
+
   final int index;
   final bool isSeen = false;
   final bool showAnimation;
@@ -23,8 +28,27 @@ class KPost extends StatelessWidget {
     required this.changePostLike,
     required this.toggleFavoriteState,
     required this.navigateToComments,
+    required this.onEdit,
+    required this.onDelete,
     required this.showAnimation,
   });
+
+  void _showOptionsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => PostOptionsBottomSheet(
+        post: post,
+        isCurrentUserPost:
+            post.publisherId == FirebaseAuth.instance.currentUser!.uid,
+        onEdit: onEdit,
+        onDelete: onDelete,
+        onToggleFavorite: toggleFavoriteState,
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +193,8 @@ class KPost extends StatelessWidget {
                     Spacer(),
                     GestureDetector(
                       behavior: HitTestBehavior.translucent,
-                      onTap: () => toggleFavoriteState(post),
+                      onTap: () => _showOptionsBottomSheet(context),
+
                       child: Icon(Icons.more_horiz, color: Colors.black54),
                     ),
                   ],

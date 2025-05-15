@@ -28,50 +28,7 @@ class DataStoryRepository implements StoryRepository {
   List<Story>? _stories;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  @override
-  Future<void> addStory(
-      {required User user, required StoryItem storyItem}) async {
-    try {
-      await _firestore
-          .collection('stories')
-          .doc(user.id)
-          .set({'story': 'story'});
-
-      final doc = await _firestore
-          .collection('stories')
-          .doc(user.id)
-          .collection('items')
-          .add(
-            storyItem.toJson(),
-          );
-
-      storyItem.id = doc.id;
-
-      if (_stories!.indexWhere((element) => element.id == user.id) == -1) {
-        _stories!.add(
-          Story(
-            id: user.id,
-            items: [storyItem],
-            publisherLogoUrl: '',
-            publisherName: user.firstName + ' ' + user.lastName,
-          ),
-        );
-      } else {
-        _stories!
-            .firstWhere((element) => element.id == user.id)
-            .items
-            .add(storyItem);
-      }
-
-      _streamController.add(UnmodifiableListView(_stories!));
-    } catch (e, st) {
-      print(e);
-      print(st);
-      rethrow;
-    }
-  }
-
-  @override
+  @overide
   bool get allStoriesSeen => throw UnimplementedError();
 
   @override
@@ -99,38 +56,40 @@ class DataStoryRepository implements StoryRepository {
 
       if (querySnapshot.docs.isNotEmpty) {
         await Future.forEach(querySnapshot.docs,
-                (QueryDocumentSnapshot<Map<String, dynamic>> element) async {
-              final querySnap2 = await _firestore
-                  .collection('stories')
-                  .doc(element.id)
-                  .collection('items')
-                  .get();
+                             
+            (QueryDocumentSnapshot<Map<String, dynamic>> element) async {
+          final querySnap2 = await _firestore
+              .collection('stories')
+              .doc(element.id)
+              .collection('items')
+              .get();
 
-              final doc =
+          final doc =
               await _firestore.collection('users').doc(element.id).get();
 
-              User user = User.fromJson(doc.data()!, doc.id);
+          User user = User.fromJson(doc.data()!, doc.id);
 
-              List<StoryItem> storyItems = [];
+          List<StoryItem> storyItems = [];
 
-              querySnap2.docs.forEach((element2) {
-                StoryItem storyItem = StoryItem.fromJson(
-                  element2.data(),
-                  element2.id,
-                );
-                if (currentUser.seenStoryItemIds.contains(storyItem.id))
-                  storyItem.isSeen = true;
-                storyItems.add(storyItem);
-              });
+          querySnap2.docs.forEach((element2) {
+            StoryItem storyItem = StoryItem.fromJson(
+              element2.data(),
+              element2.id,
+            );
+            if (currentUser.seenStoryItemIds.contains(storyItem.id))
+              storyItem.isSeen = true;
+            storyItems.add(storyItem);
+          });
 
-              _stories!.add(
-                Story(
-                    id: element.id,
-                    items: storyItems,
-                    publisherLogoUrl: '',
-                    publisherName: user.firstName + ' ' + user.lastName),
-              );
-            });
+          _stories!.add(
+            Story(
+                id: element.id,
+                items: storyItems,
+                publisherLogoUrl: '',
+                publisherName: user.firstName + ' ' + user.lastName),
+          );
+        });
+
 
         _stories!.sort((a, b) {
           if (a.items.any((item) => item.isSeen == false) &&
@@ -171,6 +130,49 @@ class DataStoryRepository implements StoryRepository {
           .items
           .firstWhere((element2) => element2.id == storyItemId)
           .isSeen = true;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> addStory(
+      {required User user, required StoryItem storyItem}) async {
+    try {
+      await _firestore
+          .collection('stories')
+          .doc(user.id)
+          .set({'story': 'story'});
+
+      final doc = await _firestore
+          .collection('stories')
+          .doc(user.id)
+          .collection('items')
+          .add(
+            storyItem.toJson(),
+          );
+
+      storyItem.id = doc.id;
+
+      if (_stories!.indexWhere((element) => element.id == user.id) == -1) {
+        _stories!.add(
+          Story(
+            id: user.id,
+            items: [storyItem],
+            publisherLogoUrl: '',
+            publisherName: user.firstName + ' ' + user.lastName,
+          ),
+        );
+      } else {
+        _stories!
+            .firstWhere((element) => element.id == user.id)
+            .items
+            .add(storyItem);
+      }
+
+      _streamController.add(UnmodifiableListView(_stories!));
     } catch (e, st) {
       print(e);
       print(st);
