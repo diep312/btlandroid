@@ -7,6 +7,11 @@ import 'package:chit_chat/src/domain/entities/user.dart';
 abstract class StoryRepository {
   void killInstance();
 
+  Future<void> addStory({
+    required User user,
+    required StoryItem storyItem,
+  });
+
   Future<void> setStoryItemAsSeen(
     User user,
     String storyId,
