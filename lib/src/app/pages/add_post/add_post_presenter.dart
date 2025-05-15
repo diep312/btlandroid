@@ -20,6 +20,7 @@ class AddPostPresenter extends Presenter {
     PostRepository postRepository,
     UserRepository userRepository,
   )   : _addPost = AddPost(postRepository, userRepository),
+
         _getCurrentUser = GetCurrentUser(userRepository);
 
   void addPost(Post post) {

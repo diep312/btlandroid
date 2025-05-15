@@ -41,15 +41,11 @@ class DefaultTexts {
   static String get loginWithGoogle => 'Đăng nhập bằng Google';
   static String get loginWithPhone => 'Đăng nhập bằng điện thoại';
 
-  static String get explore => 'Khám phá';
-  static String get messages => 'Tin nhắn';
-  static String get favorites => 'Yêu thích';
-  static String get comments => 'Bình luận';
-  static String get addPost => 'Thêm bài viết';
+  
   static String get verifyPhone => 'Xác minh số điện thoại';
   static String get startPhoneAuth => 'Bắt đầu xác thực';
   static String get users => 'Người dùng';
-  static String get addStory => 'Thêm story';
+
 
   static String get post => 'Đăng';
   static String get writeYourThoughts => 'Viết về suy nghĩ của bạn...';

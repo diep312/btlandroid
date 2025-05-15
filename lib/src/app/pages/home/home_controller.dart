@@ -21,6 +21,7 @@ class HomeController extends Controller {
           userRepository,
         );
 
+
   UnmodifiableListView<Post> posts = UnmodifiableListView([]);
   List<String>? watchlist;
 
@@ -33,6 +34,7 @@ class HomeController extends Controller {
 
   StreamController<bool?> refreshStreamController =
       StreamController.broadcast();
+
 
   @override
   void onInitState() {
@@ -87,6 +89,7 @@ class HomeController extends Controller {
     };
 
     _presenter.deletePostOnError = (e) {};
+
   }
 
   void changePostLike(Post post) async {
@@ -112,6 +115,7 @@ class HomeController extends Controller {
 
   void togglePostFavoriteState(Post post) {
     _presenter.toggleFavoriteState(post);
+
   }
 
   void getPosts() {
@@ -151,4 +155,5 @@ class HomeController extends Controller {
       ),
     );
   }
+
 }

@@ -109,4 +109,3 @@ class AddPostController extends Controller {
           publishedOn: DateTime.now()));
     }
   }
-}

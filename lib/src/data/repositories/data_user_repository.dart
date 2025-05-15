@@ -180,6 +180,7 @@ class DataUserRepository implements UserRepository {
               );
         }
       }
+
     } catch (e, st) {
       print(e);
       print(st);

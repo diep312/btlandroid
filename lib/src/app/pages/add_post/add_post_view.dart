@@ -14,6 +14,7 @@ import 'package:chit_chat/src/app/constants/texts.dart';
 import 'package:chit_chat/src/domain/entities/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
+
 class AddPostView extends View {
   @override
   State<StatefulWidget> createState() => _AddPostViewState(

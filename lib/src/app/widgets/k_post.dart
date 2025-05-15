@@ -9,6 +9,7 @@ import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:chit_chat/src/app/widgets/post_options_bottom_sheet.dart';
 
+
 class KPost extends StatelessWidget {
   final Post post;
   final Function(Post post) changePostLike;
@@ -16,6 +17,7 @@ class KPost extends StatelessWidget {
   final Function(BuildContext context, Post post) navigateToComments;
   final Function(Post post) onEdit;
   final Function(Post post) onDelete;
+
   final int index;
   final bool isSeen = false;
   final bool showAnimation;
@@ -46,6 +48,7 @@ class KPost extends StatelessWidget {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -191,6 +194,7 @@ class KPost extends StatelessWidget {
                     GestureDetector(
                       behavior: HitTestBehavior.translucent,
                       onTap: () => _showOptionsBottomSheet(context),
+
                       child: Icon(Icons.more_horiz, color: Colors.black54),
                     ),
                   ],

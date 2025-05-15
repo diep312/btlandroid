@@ -7,6 +7,7 @@ import 'package:chit_chat/src/domain/entities/user.dart';
 abstract class StoryRepository {
   void killInstance();
 
+
   Future<void> setStoryItemAsSeen(
     User user,
     String storyId,
@@ -15,9 +16,10 @@ abstract class StoryRepository {
 
   Stream<UnmodifiableListView<Story>?> getStories(User user);
   bool get allStoriesSeen;
-
+  
   Future<void> addStory({
     required User user,
     required StoryItem storyItem,
   });
+
 }

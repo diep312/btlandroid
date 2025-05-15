@@ -30,10 +30,12 @@ class HomePresenter extends Presenter {
   late Function deletePostOnComplete;
   late Function deletePostOnError;
 
+
   final GetPosts _getPosts;
   final CancelPostLike _cancelPostLike;
   final LikePost _likePost;
   final GetNextPosts _getNextPosts;
+
   final TogglePostFavoriteStatus _togglePostFavoriteStatus;
   final DeletePost _deletePost;
 
@@ -47,6 +49,7 @@ class HomePresenter extends Presenter {
         ),
         _getNextPosts = GetNextPosts(postRepository),
         _deletePost = DeletePost(postRepository);
+
 
   void getPosts() {
     _getPosts.execute(
@@ -93,6 +96,7 @@ class HomePresenter extends Presenter {
     _getNextPosts.dispose();
     _togglePostFavoriteStatus.dispose();
     _deletePost.dispose();
+
   }
 }
 
@@ -153,6 +157,7 @@ class _CancelPostLikeObserver extends Observer<void> {
   void onNext(_) {}
 }
 
+
 class _GetNextPostsObserver extends Observer<void> {
   final HomePresenter _presenter;
 
@@ -172,6 +177,7 @@ class _GetNextPostsObserver extends Observer<void> {
   void onNext(_) {}
 }
 
+
 class _TogglePostFavoriteStatusObserver extends Observer<void> {
   final HomePresenter _presenter;
 
@@ -180,11 +186,21 @@ class _TogglePostFavoriteStatusObserver extends Observer<void> {
   @override
   void onComplete() {
     _presenter.toggleFavoriteStatusOnComplete();
+
+class _LikePostObserver extends Observer<void> {
+  final HomePresenter _presenter;
+
+  _LikePostObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.likePostOnComplete();
   }
 
   @override
   void onError(e) {
     _presenter.toggleFavoriteStatusOnError(e);
+
   }
 
   @override
@@ -199,6 +215,14 @@ class _DeletePostObserver extends Observer<void> {
   @override
   void onComplete() {
     _presenter.deletePostOnComplete();
+class _CancelPostLikeObserver extends Observer<void> {
+  final HomePresenter _presenter;
+
+  _CancelPostLikeObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.cancelPostLikeOnComplete();
   }
 
   @override
