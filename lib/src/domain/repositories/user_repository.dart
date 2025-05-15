@@ -5,4 +5,22 @@ abstract class UserRepository {
 
   User get currentUser;
   Future<void> initializeRepository();
+
+  Future<void> updatePhoneNumber({
+    required String uid,
+    required String phoneNumber,
+  });
+
+  Future<void> updateEmail({
+    required String uid,
+    required String email,
+  });
+
+  Future<void> updateUsername({
+    required String uid,
+    required String firstName,
+    required String lastName,
+  });
+
+  Future<List<User>> getUsers();
 }
