@@ -5,12 +5,15 @@ import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/constants/constants.dart';
 import 'package:chit_chat/src/app/navigator/navigator.dart';
 import 'package:chit_chat/src/app/pages/favorites/favorites_presenter.dart';
+import 'package:chit_chat/src/app/pages/profile/profile_view.dart';
 import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:chit_chat/src/domain/repositories/post_repository.dart';
 import 'package:chit_chat/src/domain/repositories/user_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FavoritesController extends Controller {
   final FavoritesPresenter _presenter;
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   FavoritesController(
       PostRepository postRepository, UserRepository userRepository)
@@ -111,6 +114,18 @@ class FavoritesController extends Controller {
             child: Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+
+  void onAvatarTap(String userId) {
+    Navigator.push(
+      getContext(),
+      MaterialPageRoute(
+        builder: (context) => ProfileView(
+          userId: userId,
+          currentUserId: currentUserId,
+        ),
       ),
     );
   }

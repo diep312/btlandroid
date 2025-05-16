@@ -15,7 +15,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       home: SplashView(),
       theme: ThemeData(
-        fontFamily: 'Poppins',
+        fontFamily: 'Montserrat',
         scaffoldBackgroundColor: kBackground,
       ),
       debugShowCheckedModeBanner: false,

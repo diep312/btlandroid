@@ -1,6 +1,7 @@
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/domain/entities/message.dart';
 import 'package:chit_chat/src/domain/entities/user.dart';
+import 'package:chit_chat/src/domain/entities/user_profile.dart';
 import 'package:chit_chat/src/domain/repositories/chat_repository.dart';
 import 'package:chit_chat/src/domain/repositories/user_repository.dart';
 import 'package:chit_chat/src/domain/usecases/get_current_user.dart';
@@ -17,14 +18,19 @@ class ChatPresenter extends Presenter {
   late Function sendMessageOnComplete;
   late Function sendMessageOnError;
 
+  late Function getUserProfileOnNext;
+  late Function getUserProfileOnError;
+
   final GetCurrentUser _getCurrentUser;
   final GetMessages _getMessages;
   final SendMessage _sendMessage;
+  final UserRepository _userRepository;
 
   ChatPresenter(UserRepository userRepository, ChatRepository chatRepository)
       : _getCurrentUser = GetCurrentUser(userRepository),
         _getMessages = GetMessages(chatRepository),
-        _sendMessage = SendMessage(chatRepository);
+        _sendMessage = SendMessage(chatRepository),
+        _userRepository = userRepository;
 
   void getCurrentUser() {
     _getCurrentUser.execute(_GetCurrentUserObserver(this));
@@ -37,6 +43,14 @@ class ChatPresenter extends Presenter {
   void sendMessage(Message message, List<String> userIds) {
     _sendMessage.execute(
         _SendMessageObserver(this), SendMessageParams(message, userIds));
+  }
+
+  void getUserProfile(String userId) {
+    _userRepository.getUserProfile(userId).then((profile) {
+      getUserProfileOnNext(profile);
+    }).catchError((error) {
+      getUserProfileOnError(error);
+    });
   }
 
   @override

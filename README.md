@@ -29,12 +29,16 @@ ChitChat là dự án mạng xã hội được xây dựng bằng Flutter theo 
 - **Clean Architecture**
 - **Cupertino & Material Design**
 
+## 🎨 Thiết kế giao diện của dự án 
+- **Figma**: https://www.figma.com/design/2LyuzUFHfMNBmXlFGnSdlt/ChitChat?node-id=0-1&t=MqgHC3WszWR9QVOZ-1
+
+
 ## 📦 Cài đặt & chạy thử
 
 1. **Clone dự án:**
    ```bash
-   git clone https://github.com/your-username/your-repo.git
-   cd flutter-social-media-app-clean-architecture
+   git https://github.com/diep312/btlandroid.git
+   cd btlandroid
    ```
 
 2. **Cài đặt dependencies:**

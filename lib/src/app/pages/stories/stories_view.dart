@@ -101,7 +101,8 @@ class _StoryViewState extends ViewState<StoriesView, StoriesController> {
                                     gradient: LinearGradient(
                                       colors: [
                                         Color(0xFFFC466B),
-                                        Color(0xFF3F5EFB)
+                                        Color(0xFF9F52B3),
+                                        Color(0xFF3F5EFB),
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
@@ -143,7 +144,8 @@ class _StoryViewState extends ViewState<StoriesView, StoriesController> {
                                                 gradient: LinearGradient(
                                                   colors: [
                                                     Color(0xFFFC466B),
-                                                    Color(0xFF3F5EFB)
+                                                    Color(0xFF9F52B3),
+                                                    Color(0xFF3F5EFB),
                                                   ],
                                                   begin: Alignment.topLeft,
                                                   end: Alignment.bottomRight,

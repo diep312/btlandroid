@@ -3,6 +3,7 @@ import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/pages/chat/chat_presenter.dart';
 import 'package:chit_chat/src/domain/entities/message.dart';
 import 'package:chit_chat/src/domain/entities/user.dart';
+import 'package:chit_chat/src/domain/entities/user_profile.dart';
 import 'package:chit_chat/src/domain/repositories/chat_repository.dart';
 import 'package:chit_chat/src/domain/repositories/user_repository.dart';
 
@@ -17,6 +18,7 @@ class ChatController extends Controller {
   User peerUser;
   List<Message>? messages;
   String userMessage = '';
+  Map<String, UserProfile> userProfiles = {};
   final TextEditingController textEditingController = TextEditingController();
   late ScrollController scrollController;
 
@@ -24,6 +26,7 @@ class ChatController extends Controller {
   void onInitState() {
     scrollController = ScrollController();
     _presenter.getCurrentUser();
+    _presenter.getUserProfile(peerUser.id);
     super.onInitState();
   }
 
@@ -34,6 +37,7 @@ class ChatController extends Controller {
     _presenter.getCurrentUserOnNext = (User currentUser) {
       this.currentUser = currentUser;
       _presenter.getMessages([currentUser.id, peerUser.id]);
+      _presenter.getUserProfile(currentUser.id);
       refreshUI();
     };
 
@@ -56,6 +60,15 @@ class ChatController extends Controller {
     };
 
     _presenter.sendMessageOnError = (error) {};
+
+    _presenter.getUserProfileOnError = (error) {};
+
+    _presenter.getUserProfileOnNext = (UserProfile? profile) {
+      if (profile != null) {
+        userProfiles[profile.userId] = profile;
+        refreshUI();
+      }
+    };
   }
 
   void sendMessage() {
@@ -73,5 +86,9 @@ class ChatController extends Controller {
   void onMessageWrite(String text) {
     userMessage = text;
     refreshUI();
+  }
+
+  String? getAvatarUrl(String userId) {
+    return userProfiles[userId]?.avatarUrl;
   }
 }

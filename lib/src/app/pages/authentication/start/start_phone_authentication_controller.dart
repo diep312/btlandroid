@@ -51,7 +51,7 @@ class PhoneAuthenticationStartController extends Controller {
         });
         await KNavigator.navigateToPhoneAuthenticationVerify(
           context: getContext(),
-          phoneNumber: '+90' + phoneNumber,
+          phoneNumber: '+84' + phoneNumber.substring(1),
         );
         startPhoneVerificationEnum = null;
         autovalidateMode = AutovalidateMode.onUserInteraction;
@@ -103,7 +103,7 @@ class PhoneAuthenticationStartController extends Controller {
       refreshUI();
       FocusScope.of(getContext()).unfocus();
       _presenter.startPhoneVerification(
-        phoneNumber: '+90' + phoneNumber,
+        phoneNumber: '+84' + phoneNumber.substring(1),
       );
     } else {
       isButtonDisabled = true;

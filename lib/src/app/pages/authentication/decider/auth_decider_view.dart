@@ -39,8 +39,9 @@ class _AuthDeciderViewState
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFFFC466B), // Pinkish
-                  Color(0xFF3F5EFB), // Bluish
+                  Color(0xFFFC466B),
+                  Color(0xFF9F52B3),
+                  Color(0xFF3F5EFB),
                 ],
               ),
             ),

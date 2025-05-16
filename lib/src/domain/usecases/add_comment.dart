@@ -18,6 +18,9 @@ class AddComment extends UseCase<void, AddCommentParams> {
     try {
       User currentUser = _userRepository.currentUser;
 
+      // Fetch user profile to get avatarUrl
+      final userProfile = await _userRepository.getUserProfile(currentUser.id);
+
       Comment comment = Comment(
         id: '',
         authorId: currentUser.id,
@@ -25,6 +28,9 @@ class AddComment extends UseCase<void, AddCommentParams> {
         targetId: params!.comment.targetId,
         text: params.comment.text,
         sharedOn: params.comment.sharedOn,
+        authorAvatarUrl: userProfile?.avatarUrl ?? '',
+        commentLikesCount: 0,
+        likedByUsers: [],
       );
 
       await _postRepository.addComment(comment);

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1063594777818",
+    "project_id": "btl-android-506a1",
+    "storage_bucket": "btl-android-506a1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063594777818:android:08397cca436558eda759e3",
+        "android_client_info": {
+          "package_name": "com.example.chit_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063594777818-m0o4s8p1q0ktimpf73nq75je8tpvdkvf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chit_chat",
+            "certificate_hash": "8e80384b063fb5182f74589edb6d759a2150ce15"
+          }
+        },
+        {
+          "client_id": "1063594777818-a1m258uebso471ct80erivjcjblp04rj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnbCwoyyXRd1Fzvz3BxV-XAdccX4c1Zu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063594777818-a1m258uebso471ct80erivjcjblp04rj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1063594777818-k73g50h93ir95o9c06gf78i3966cj64m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.friendZone"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

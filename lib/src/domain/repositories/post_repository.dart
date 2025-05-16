@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:async';
 
 import 'package:chit_chat/src/domain/entities/comment.dart';
 import 'package:chit_chat/src/domain/entities/post.dart';
@@ -26,4 +27,11 @@ abstract class PostRepository {
   });
   Stream<UnmodifiableListView<Post>?> getFavoritedPosts(User user);
   Future<void> deletePost(String postId);
+  Future<void> toggleCommentLike(
+    String postId,
+    String commentId,
+    String userId,
+    bool isLiked,
+  );
+  Stream<List<Post>?> getUserPost(String userId);
 }

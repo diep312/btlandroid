@@ -4,7 +4,6 @@ class UserProfile {
   final String? avatarUrl;
   final int followersCount;
   final int likesCount;
-  // Add more fields as needed
 
   UserProfile({
     required this.userId,
@@ -17,8 +16,8 @@ class UserProfile {
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
       userId: json['userId'] ?? '',
-      description: json['description'],
-      avatarUrl: json['avatarUrl'],
+      description: json['description'] as String?,
+      avatarUrl: json['avatarUrl'] as String?,
       followersCount: json['followersCount'] ?? 0,
       likesCount: json['likesCount'] ?? 0,
     );

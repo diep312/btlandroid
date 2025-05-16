@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:chit_chat/src/domain/entities/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:chit_chat/src/domain/entities/user.dart';
 import 'package:chit_chat/src/domain/repositories/user_repository.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DataUserRepository implements UserRepository {
   static DataUserRepository? _instance;
@@ -14,6 +16,7 @@ class DataUserRepository implements UserRepository {
   }
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   late User _user;
 
@@ -123,6 +126,24 @@ class DataUserRepository implements UserRepository {
   @override
   Future<UserProfile> getUserProfile(String userId) async {
     try {
+      // 1. Query posts for this user
+      final postsQuery = await _firestore
+          .collection('posts')
+          .where('publisherId', isEqualTo: userId)
+          .get();
+      int totalLikes = 0;
+      for (var doc in postsQuery.docs) {
+        final data = doc.data();
+        if (data.containsKey('numberOfLikes') && data['numberOfLikes'] is int) {
+          totalLikes += data['numberOfLikes'] as int;
+        }
+      }
+      // 2. Update likesCount in user_profiles
+      await _firestore.collection('user_profiles').doc(userId).set({
+        'likesCount': totalLikes,
+      }, SetOptions(merge: true));
+
+      // 3. Fetch the user profile as before
       final doc =
           await _firestore.collection('user_profiles').doc(userId).get();
       if (!doc.exists) {
@@ -180,11 +201,168 @@ class DataUserRepository implements UserRepository {
               );
         }
       }
-
     } catch (e, st) {
       print(e);
       print(st);
       rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateProfile({
+    required String description,
+    String? avatarUrl,
+  }) async {
+    try {
+      final userId = auth.FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) throw Exception('User not authenticated');
+
+      print('Updating profile for user: $userId');
+      print('Avatar URL received: $avatarUrl');
+
+      String? finalAvatarUrl = avatarUrl;
+
+      // If avatarUrl is a file path (starts with 'file://'), upload it to Firebase Storage
+      if (avatarUrl != null && avatarUrl.startsWith('file://')) {
+        final filePath = avatarUrl.replaceFirst('file://', '');
+        print('Processing local file: $filePath');
+
+        final file = File(filePath);
+        if (!await file.exists()) {
+          throw Exception('Image file does not exist at path: $filePath');
+        }
+
+        finalAvatarUrl = await uploadImage(file);
+        print('New avatar URL after upload: $finalAvatarUrl');
+      }
+
+      final updates = <String, dynamic>{
+        'description': description,
+      };
+
+      if (finalAvatarUrl != null) {
+        updates['avatarUrl'] = finalAvatarUrl;
+      }
+
+      print('Updating Firestore with data: $updates');
+      await _firestore.collection('user_profiles').doc(userId).set(
+            updates,
+            SetOptions(merge: true),
+          );
+      print('Profile update completed successfully');
+
+      // Update all posts with the new avatar URL if it was changed
+      if (finalAvatarUrl != null) {
+        final postsQuery = await _firestore
+            .collection('posts')
+            .where('publisherId', isEqualTo: userId)
+            .get();
+        for (var doc in postsQuery.docs) {
+          await doc.reference.update({'publisherLogoUrl': finalAvatarUrl});
+        }
+        print('Updated publisherLogoUrl in posts for user: $userId');
+      }
+    } catch (e, st) {
+      print('Error updating profile: $e');
+      print('Stack trace: $st');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> followUser(String userId) async {
+    try {
+      // Add the user to current user's following list
+      await _firestore.collection('user_profiles').doc(currentUser.id).update({
+        'following': FieldValue.arrayUnion([userId])
+      });
+
+      // Add current user to the target user's followers list
+      await _firestore.collection('user_profiles').doc(userId).update({
+        'followers': FieldValue.arrayUnion([currentUser.id])
+      });
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> unfollowUser(String userId) async {
+    try {
+      // Remove the user from current user's following list
+      await _firestore.collection('user_profiles').doc(currentUser.id).update({
+        'following': FieldValue.arrayRemove([userId])
+      });
+
+      // Remove current user from the target user's followers list
+      await _firestore.collection('user_profiles').doc(userId).update({
+        'followers': FieldValue.arrayRemove([currentUser.id])
+      });
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateUser(User user) async {
+    try {
+      await _firestore.collection('users').doc(user.id).update(user.toJson());
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  Future<String> uploadImage(File imageFile) async {
+    try {
+      final userId = auth.FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) throw Exception('User not authenticated');
+
+      print('Starting image upload for user: $userId');
+      print('Image file path: ${imageFile.path}');
+      print('Image file exists: ${await imageFile.exists()}');
+
+      final ref = _storage.ref().child('users/$userId/profile.jpg');
+      print('Storage reference path: ${ref.fullPath}');
+
+      final uploadTask = await ref.putFile(imageFile);
+      print('Upload task completed: ${uploadTask.state}');
+
+      final downloadUrl = await ref.getDownloadURL();
+      print('Download URL obtained: $downloadUrl');
+
+      return downloadUrl;
+    } catch (e, st) {
+      print('Error uploading image: $e');
+      print('Stack trace: $st');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<User?> getUserById(String userId) async {
+    try {
+      final doc = await _firestore.collection('users').doc(userId).get();
+      if (!doc.exists) return null;
+
+      final data = doc.data()!;
+      return User(
+        id: doc.id,
+        firstName: data['firstName'] ?? '',
+        lastName: data['lastName'] ?? '',
+        phoneNumber: data['phone'] as String?,
+        email: data['email'] as String?,
+        likedPostIds: Set<String>.from(data['likedPostIds'] ?? {}),
+        seenStoryItemIds: Set<String>.from(data['seenStoryItemIds'] ?? {}),
+        favoritedPostIds: Set<String>.from(data['favoritedPostIds'] ?? {}),
+      );
+    } catch (e) {
+      throw Exception('Failed to get user: $e');
     }
   }
 }

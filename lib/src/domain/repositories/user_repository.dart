@@ -2,9 +2,8 @@ import 'package:chit_chat/src/domain/entities/user.dart';
 import 'package:chit_chat/src/domain/entities/user_profile.dart';
 
 abstract class UserRepository {
-  void killInstance();
-
   User get currentUser;
+  void killInstance();
   Future<void> initializeRepository();
 
   Future<void> updatePhoneNumber({
@@ -25,7 +24,18 @@ abstract class UserRepository {
 
   Future<List<User>> getUsers();
 
-  Future<UserProfile> getUserProfile(String userId);
-  Future<void> updateUserProfile(UserProfile profile);
+  Future<UserProfile?> getUserProfile(String userId);
+  Future<void> updateUserProfile(UserProfile userProfile);
   Future<void> deleteUserProfile(String userId);
+
+  Future<void> updateProfile({
+    required String description,
+    String? avatarUrl,
+  });
+
+  Future<void> followUser(String userId);
+  Future<void> unfollowUser(String userId);
+  Future<void> updateUser(User user);
+
+  Future<User?> getUserById(String userId);
 }

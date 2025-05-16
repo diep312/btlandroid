@@ -5,6 +5,7 @@ import 'package:chit_chat/src/app/navigator/navigator.dart';
 import 'package:chit_chat/src/app/pages/core/core_controller.dart';
 import 'package:chit_chat/src/app/widgets/navigation_bar_item_button.dart';
 import 'package:lottie/lottie.dart';
+import 'package:chit_chat/src/app/widgets/k_draggable_bottom_sheet.dart';
 
 class CoreViewHolder extends View {
   @override
@@ -155,7 +156,16 @@ class _CoreViewState extends ViewState<_CoreView, CoreController> {
                     ],
                   ),
                 ),
-                _NavigationBar(size, padding),
+                ValueListenableBuilder<bool>(
+                  valueListenable: KDraggableBottomSheet.isSheetOpen,
+                  builder: (context, isSheetOpen, child) {
+                    return AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      height: isSheetOpen ? 0 : 75 + padding.bottom,
+                      child: isSheetOpen ? null : _NavigationBar(size, padding),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -179,7 +189,11 @@ class _AddPostButton extends StatelessWidget {
         height: 64,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFFC466B), Color(0xFF3F5EFB)],
+            colors: [
+              Color(0xFFFC466B),
+              Color(0xFF9F52B3),
+              Color(0xFF3F5EFB),
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

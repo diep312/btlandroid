@@ -11,6 +11,7 @@ import 'package:chit_chat/src/data/repositories/data_post_repository.dart';
 import 'package:chit_chat/src/data/repositories/data_user_repository.dart';
 import 'package:chit_chat/src/data/utils/string_utils.dart';
 import 'package:chit_chat/src/domain/entities/comment.dart';
+import 'package:chit_chat/src/app/constants/texts.dart';
 
 class CommentsBottomSheet extends View {
   final String postId;
@@ -83,7 +84,7 @@ class _CommentsBottomSheetState
                       ? (controller.comments.isEmpty
                           ? Center(
                               child: Text(
-                                'No comments to show',
+                                DefaultTexts.noComments,
                                 style: k14w400AxiBlackGeneralText(
                                     color: kBlack.withOpacity(0.4)),
                               ),
@@ -169,63 +170,84 @@ class _Comment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Avatar
-          CircleAvatar(
-            radius: 22,
-            backgroundImage: AssetImage(
-              'assets/icons/png/current_user.png', // You can use comment.authorId to select avatar
-            ),
-          ),
-          SizedBox(width: 12),
-          // Name, time, text
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+    final currentUserId = auth.FirebaseAuth.instance.currentUser!.uid;
+    final isLiked = comment.isLikedByUser(currentUserId);
+
+    return ControlledWidgetBuilder<CommentsController>(
+      builder: (context, controller) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Avatar
+              CircleAvatar(
+                radius: 18,
+                backgroundImage: comment.authorAvatarUrl.isNotEmpty
+                    ? NetworkImage(comment.authorAvatarUrl)
+                    : AssetImage('assets/icons/png/default_user.png')
+                        as ImageProvider,
+              ),
+              SizedBox(width: 12),
+              // Name, time, text
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      comment.authorName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: kBlack,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          comment.authorName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: kBlack,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          StringUtils.getDateInDayMonthYearFormat(
+                              comment.sharedOn, "/"),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(height: 2),
                     Text(
-                      StringUtils.getDateInMinSecFormat(comment.sharedOn),
+                      comment.text,
+                      style: TextStyle(fontSize: 14, color: kBlack),
+                    ),
+                  ],
+                ),
+              ),
+              // Heart icon and count with like functionality
+              GestureDetector(
+                onTap: () => controller.toggleLike(comment.id),
+                child: Column(
+                  children: [
+                    Icon(
+                      isLiked ? Icons.favorite : Icons.favorite_border,
+                      size: 16,
+                      color: isLiked ? Colors.red : Colors.grey,
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      '${comment.commentLikesCount}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: isLiked ? Colors.red : Colors.grey,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 2),
-                Text(
-                  comment.text,
-                  style: TextStyle(fontSize: 14, color: kBlack),
-                ),
-              ],
-            ),
-          ),
-          // Heart icon and count (placeholder)
-          Column(
-            children: [
-              Icon(Icons.favorite_border, color: Colors.grey[400], size: 20),
-              SizedBox(height: 2),
-              Text('200',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[400])),
+              ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

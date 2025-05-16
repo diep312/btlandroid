@@ -89,6 +89,7 @@ class _FavoritesViewState
                             children: [
                               for (int i = 0; i < controller.posts!.length; i++)
                                 KPost(
+                                  onAvatarTap: controller.onAvatarTap,
                                   index: i,
                                   post: controller.posts![i],
                                   changePostLike: controller.changePostLike,

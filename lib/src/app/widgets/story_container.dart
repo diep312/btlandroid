@@ -59,19 +59,39 @@ class _StoryContainerState extends State<StoryContainer>
                         width: 68,
                         height: 68,
                         padding: EdgeInsets.all(4),
-                        child: widget.story.publisherLogoUrl.isEmpty
+                        child: widget.story.items.isEmpty
                             ? Image.asset(
-                                widget.story.id ==
-                                        FirebaseAuth.instance.currentUser!.uid
-                                    ? 'assets/icons/png/current_user.png'
-                                    : 'assets/icons/png/default_user.png',
+                                'assets/icons/png/default_user.png',
+                                fit: BoxFit.cover,
                               )
-                            : CachedNetworkImage(
-                                imageUrl: widget.story.publisherLogoUrl,
-                                fit: BoxFit.scaleDown,
-                                placeholder: (a, b) {
-                                  return ShimmeredStory();
-                                },
+                            : Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(34),
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          widget.story.items.first.imageUrl,
+                                      fit: BoxFit.cover,
+                                      placeholder: (a, b) {
+                                        return ShimmeredStory();
+                                      },
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(34),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          Colors.black.withOpacity(0.3),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               )),
                     RotationTransition(
                       turns: base,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/constants/constants.dart';
+import 'package:chit_chat/src/app/constants/texts.dart';
 import 'package:chit_chat/src/app/pages/chat/chat_controller.dart';
 import 'package:chit_chat/src/app/widgets/message_container.dart';
 import 'package:chit_chat/src/data/repositories/data_chat_repository.dart';
@@ -65,8 +66,13 @@ class _ChatViewState extends ViewState<ChatView, ChatController> {
                       SizedBox(width: 12),
                       CircleAvatar(
                         radius: 22,
-                        backgroundImage:
-                            AssetImage('assets/icons/png/default_user.png'),
+                        backgroundImage: controller
+                                    .getAvatarUrl(widget.peerUser.id) !=
+                                null
+                            ? NetworkImage(
+                                controller.getAvatarUrl(widget.peerUser.id)!)
+                            : AssetImage('assets/icons/png/default_user.png')
+                                as ImageProvider,
                       ),
                       SizedBox(width: 12),
                       Column(
@@ -113,7 +119,7 @@ class _ChatViewState extends ViewState<ChatView, ChatController> {
                                   child: controller.messages!.isEmpty
                                       ? Center(
                                           child: Text(
-                                            'No message history. Lets start a conversation',
+                                            DefaultTexts.noMessageHistory,
                                             textAlign: TextAlign.center,
                                             style: k14w400AxiBlackGeneralText(
                                                 color: kBlack.withOpacity(0.4)),
@@ -150,24 +156,7 @@ class _ChatViewState extends ViewState<ChatView, ChatController> {
                                       top: 8),
                                   child: Row(
                                     children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 8,
-                                              offset: Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        child: IconButton(
-                                          icon: Icon(Icons.camera_alt_outlined,
-                                              color: Color(0xFF648FD9)),
-                                          onPressed: () {},
-                                        ),
-                                      ),
+                                      // Container(                                    //   decoration: BoxDecoration(                                    //     color: Colors.white,                                    //     shape: BoxShape.circle,                                    //     boxShadow: [                                    //       BoxShadow(                                    //         color: Colors.black12,                                    //         blurRadius: 8,                                    //         offset: Offset(0, 2),                                    //       ),                                    //     ],                                    //   ),                                    //   child: IconButton(                                    //     icon: Icon(Icons.camera_alt_outlined,                                    //         color: Color(0xFF648FD9)),                                    //     onPressed: () {},                                    //   ),                                    // ),
                                       SizedBox(width: 10),
                                       Expanded(
                                         child: Container(
@@ -203,7 +192,8 @@ class _ChatViewState extends ViewState<ChatView, ChatController> {
                                               hintStyle:
                                                   k13w300AxiWhiteProfileHeaderText(
                                                       color: kDot),
-                                              hintText: 'Viết tin nhắn...',
+                                              hintText:
+                                                  DefaultTexts.writeMessage,
                                             ),
                                           ),
                                         ),

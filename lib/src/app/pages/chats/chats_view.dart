@@ -87,7 +87,7 @@ class _ChatsViewSate extends ViewState<ChatsView, ChatsController> {
                                     i < controller.lastMessages!.length;
                                     i++)
                                   _LastMessageContainer(
-                                      controller.lastMessages![i])
+                                      controller.lastMessages![i], controller)
                               ],
                             ),
                     ),
@@ -99,8 +99,9 @@ class _ChatsViewSate extends ViewState<ChatsView, ChatsController> {
 
 class _LastMessageContainer extends StatelessWidget {
   final Message message;
+  final ChatsController controller;
 
-  _LastMessageContainer(this.message);
+  _LastMessageContainer(this.message, this.controller);
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +132,13 @@ class _LastMessageContainer extends StatelessWidget {
               Container(
                 width: 65,
                 height: 65,
-                child: Image.asset('assets/icons/png/default_user.png'),
+                child: CircleAvatar(
+                  backgroundImage: controller.getAvatarUrl(userToShow.id) !=
+                          null
+                      ? NetworkImage(controller.getAvatarUrl(userToShow.id)!)
+                      : AssetImage('assets/icons/png/default_user.png')
+                          as ImageProvider,
+                ),
                 decoration: BoxDecoration(shape: BoxShape.circle),
               ),
               SizedBox(width: 20),

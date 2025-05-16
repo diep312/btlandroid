@@ -20,7 +20,6 @@ class AddStoryController extends Controller {
           userRepository,
         );
 
-
   XFile? image;
   ImagePicker imagePicker = ImagePicker();
 

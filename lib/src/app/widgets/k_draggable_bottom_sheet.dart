@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-class KDraggableBottomSheet extends StatelessWidget {
+class KDraggableBottomSheet extends StatefulWidget {
   final Widget child;
   final double initialChildSize;
   final double minChildSize;
   final double maxChildSize;
   final bool showHandle;
+  static final ValueNotifier<bool> isSheetOpen = ValueNotifier<bool>(false);
 
   const KDraggableBottomSheet({
     Key? key,
@@ -17,11 +18,45 @@ class KDraggableBottomSheet extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<KDraggableBottomSheet> createState() => _KDraggableBottomSheetState();
+}
+
+class _KDraggableBottomSheetState extends State<KDraggableBottomSheet> {
+  late DraggableScrollableController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = DraggableScrollableController();
+    _controller.addListener(_onDragUpdate);
+  }
+
+  void _onDragUpdate() {
+    if (_controller.size > widget.minChildSize) {
+      if (!KDraggableBottomSheet.isSheetOpen.value) {
+        KDraggableBottomSheet.isSheetOpen.value = true;
+      }
+    } else {
+      if (KDraggableBottomSheet.isSheetOpen.value) {
+        KDraggableBottomSheet.isSheetOpen.value = false;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onDragUpdate);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: initialChildSize,
-      minChildSize: minChildSize,
-      maxChildSize: maxChildSize,
+      controller: _controller,
+      initialChildSize: widget.initialChildSize,
+      minChildSize: widget.minChildSize,
+      maxChildSize: widget.maxChildSize,
       builder: (context, scrollController) {
         return Container(
           decoration: const BoxDecoration(
@@ -38,7 +73,7 @@ class KDraggableBottomSheet extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (showHandle)
+              if (widget.showHandle)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: Container(
@@ -51,7 +86,7 @@ class KDraggableBottomSheet extends StatelessWidget {
                   ),
                 ),
               Expanded(
-                child: child,
+                child: widget.child,
               ),
             ],
           ),

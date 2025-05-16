@@ -36,88 +36,119 @@ class _PhoneAuthenticationStartViewState extends ViewState<
       key: globalKey,
       resizeToAvoidBottomInset: false,
       body: ControlledWidgetBuilder<PhoneAuthenticationStartController>(
-          builder: (context, controller) {
-        return Stack(
-          children: [
-            Column(
-              children: [
-                KAppBar(
-                  header: DefaultTexts.startPhoneAuth,
-                  showNotification: false,
-                ),
-                Expanded(
-                  child: CustomScrollView(
-                    physics: kPhysics,
-                    slivers: [
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(height: size.height * 0.05),
-                            SizedBox(
-                              width: size.width * 0.76,
-                              child: Form(
-                                key: controller.formkey,
-                                child: KTextFormField(
-                                  onChanged: controller.setPhoneNumber,
-                                  mainText: controller.mainText,
-                                  mainTextColor: controller.mainTextColor,
-                                  contentTextColor: kBlack,
-                                  hintText: '(500) 000 00 00',
-                                  maxLength: 10,
-                                  keyboardType: TextInputType.phone,
-                                  validator: ValidatorHelper.kPhoneValidator,
-                                  nullAutoValidateMode:
-                                      controller.autovalidateMode == null
-                                          ? true
-                                          : false,
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                ),
-                              ),
+        builder: (context, controller) {
+          return Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.centerLeft,
+                colors: [
+                  Color(0xFFFA5C9C), // pink
+                  Color(0xFF8B5CF6), // purple
+                  Color(0xFF1976D2), // blue
+                ],
+              ),
+            ),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Container(
+                  width: size.width * 0.9,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        DefaultTexts.phoneAuthTitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          DefaultTexts.phoneNumberLabel,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(32),
+                          border: Border.all(color: Colors.black26, width: 1),
+                        ),
+                        child: Form(
+                          key: controller.formkey,
+                          child: TextFormField(
+                            onChanged: controller.setPhoneNumber,
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                            keyboardType: TextInputType.phone,
+                            maxLength: 10,
+                            decoration: InputDecoration(
+                              hintText: DefaultTexts.phoneNumberHint,
+                              border: InputBorder.none,
+                              counterText: '',
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 14),
                             ),
-                            const SizedBox(height: 10),
-                            ControlledWidgetBuilder<
-                                    PhoneAuthenticationStartController>(
-                                builder: (context, controller) {
-                              return KButton(
-                                bgColor: controller.isButtonDisabled
-                                    ? kDisabled
-                                    : kPrimary,
-                                mainText: DefaultTexts.continuee,
-                                textStyle: k14w600ProxWhiteButtonText(),
-                                onPressed: controller.startPhoneVerification,
-                              );
-                            }),
-                            if (!isKeyboardClosed)
-                              Container(
-                                width: size.width,
-                                height: 200,
-                              )
-                          ],
+                            validator: (value) =>
+                                ValidatorHelper.kPhoneValidator(value ?? ''),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: controller.isButtonDisabled
+                                ? kDisabled
+                                : Color(0xFF1976D2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 18),
+                            elevation: 2,
+                          ),
+                          onPressed: controller.isButtonDisabled
+                              ? null
+                              : controller.startPhoneVerification,
+                          child: Text(
+                            DefaultTexts.continuee,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-            if (controller.isLoading)
-              Container(
-                height: size.height,
-                width: size.width,
-                padding: EdgeInsets.only(bottom: size.height * 0.05),
-                color: kBlack.withOpacity(0.6),
-                child: Center(
-                  child: Lottie.asset(
-                    'assets/animations/loading.json',
-                  ),
-                ),
               ),
-          ],
-        );
-      }),
+            ),
+          );
+        },
+      ),
     );
   }
 }

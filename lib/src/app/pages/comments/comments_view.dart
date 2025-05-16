@@ -64,7 +64,7 @@ class _CommentsViewState extends ViewState<CommentsView, CommentsController> {
                               margin: EdgeInsets.only(top: 35),
                             ),
                             Text(
-                              'No comments to show',
+                              DefaultTexts.noComments,
                               style: k14w400AxiBlackGeneralText(
                                   color: kBlack.withOpacity(0.4)),
                             ),
@@ -167,10 +167,13 @@ class _Comment extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: AssetImage(comment.authorId ==
-                                auth.FirebaseAuth.instance.currentUser!.uid
-                            ? 'assets/icons/png/current_user.png'
-                            : 'assets/icons/png/default_user.png'),
+                        image: comment.authorAvatarUrl.isNotEmpty
+                            ? NetworkImage(comment.authorAvatarUrl)
+                            : AssetImage(comment.authorId ==
+                                        auth.FirebaseAuth.instance.currentUser!.uid
+                                    ? 'assets/icons/png/current_user.png'
+                                    : 'assets/icons/png/default_user.png')
+                                as ImageProvider,
                         fit: BoxFit.fill),
                   ),
                 ),
@@ -213,11 +216,22 @@ class _Comment extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(
                   left: size.width * 0.112 + size.width * 0.028),
-              child: Text(
-                comment.text,
-                style: k10w400AxiBlackBottomText(),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      comment.text,
+                      style: k10w400AxiBlackBottomText(),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.favorite, size: 14, color: Colors.red),
+                  SizedBox(width: 2),
+                  Text('${comment.commentLikesCount}',
+                      style: k10w400AxiBlackBottomText()),
+                ],
               ),
             ),
             SizedBox(

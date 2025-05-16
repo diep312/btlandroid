@@ -28,7 +28,7 @@ class DataStoryRepository implements StoryRepository {
   List<Story>? _stories;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  @overide
+  @override
   bool get allStoriesSeen => throw UnimplementedError();
 
   @override
@@ -56,7 +56,6 @@ class DataStoryRepository implements StoryRepository {
 
       if (querySnapshot.docs.isNotEmpty) {
         await Future.forEach(querySnapshot.docs,
-                             
             (QueryDocumentSnapshot<Map<String, dynamic>> element) async {
           final querySnap2 = await _firestore
               .collection('stories')
@@ -89,7 +88,6 @@ class DataStoryRepository implements StoryRepository {
                 publisherName: user.firstName + ' ' + user.lastName),
           );
         });
-
 
         _stories!.sort((a, b) {
           if (a.items.any((item) => item.isSeen == false) &&

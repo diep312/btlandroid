@@ -7,6 +7,7 @@ import 'package:chit_chat/src/app/pages/add_post/add_post_presenter.dart';
 import 'package:chit_chat/src/data/helpers/upload_helper.dart';
 import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:chit_chat/src/domain/entities/user.dart';
+import 'package:chit_chat/src/domain/entities/user_profile.dart';
 import 'package:chit_chat/src/domain/repositories/post_repository.dart';
 import 'package:chit_chat/src/domain/repositories/user_repository.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -27,11 +28,24 @@ class AddPostController extends Controller {
   CroppedFile? image;
   ImagePicker imagePicker = ImagePicker();
   String description = '';
+  UserProfile? userProfile;
 
   @override
   void onInitState() {
     _presenter.getCurrentUser();
+    _fetchUserProfile();
     super.onInitState();
+  }
+
+  void _fetchUserProfile() async {
+    if (currentUser != null) {
+      userProfile =
+          await _presenter.userRepository.getUserProfile(currentUser!.id);
+      refreshUI();
+    } else {
+      // Wait for currentUser to be loaded, then fetch profile
+      Future.delayed(Duration(milliseconds: 200), _fetchUserProfile);
+    }
   }
 
   @override
@@ -109,3 +123,4 @@ class AddPostController extends Controller {
           publishedOn: DateTime.now()));
     }
   }
+}

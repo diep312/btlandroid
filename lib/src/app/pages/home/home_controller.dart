@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/constants/constants.dart';
@@ -10,8 +11,11 @@ import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:chit_chat/src/domain/repositories/post_repository.dart';
 import 'package:chit_chat/src/domain/repositories/user_repository.dart';
 
+import '../profile/profile_view.dart';
+
 class HomeController extends Controller {
   final HomePresenter _presenter;
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   HomeController(
     PostRepository postRepository,
@@ -20,7 +24,6 @@ class HomeController extends Controller {
           postRepository,
           userRepository,
         );
-
 
   UnmodifiableListView<Post> posts = UnmodifiableListView([]);
   List<String>? watchlist;
@@ -34,7 +37,6 @@ class HomeController extends Controller {
 
   StreamController<bool?> refreshStreamController =
       StreamController.broadcast();
-
 
   @override
   void onInitState() {
@@ -89,7 +91,6 @@ class HomeController extends Controller {
     };
 
     _presenter.deletePostOnError = (e) {};
-
   }
 
   void changePostLike(Post post) async {
@@ -115,7 +116,6 @@ class HomeController extends Controller {
 
   void togglePostFavoriteState(Post post) {
     _presenter.toggleFavoriteState(post);
-
   }
 
   void getPosts() {
@@ -130,6 +130,18 @@ class HomeController extends Controller {
   void editPost(Post post) {
     // Navigate to edit post page
     KNavigator.navigateToEditPost(getContext(), post);
+  }
+
+  void onAvatarTap(String userId) {
+    Navigator.push(
+      getContext(),
+      MaterialPageRoute(
+        builder: (context) => ProfileView(
+          userId: userId,
+          currentUserId: currentUserId,
+        ),
+      ),
+    );
   }
 
   void deletePost(Post post) {
@@ -155,5 +167,4 @@ class HomeController extends Controller {
       ),
     );
   }
-
 }

@@ -8,6 +8,7 @@ import 'package:chit_chat/src/app/widgets/add_comment_widget.dart';
 import 'package:chit_chat/src/domain/entities/comment.dart';
 import 'package:chit_chat/src/domain/repositories/post_repository.dart';
 import 'package:chit_chat/src/domain/repositories/user_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CommentsController extends Controller {
   final CommentsPresenter _presenter;
@@ -86,6 +87,18 @@ class CommentsController extends Controller {
     };
 
     _presenter.addCommentOnError = (e) {};
+
+    _presenter.toggleLikeOnComplete = () {
+      Future.delayed(Duration.zero).then((_) {
+        KNavigator.changeLoadingStatus(false);
+      });
+    };
+
+    _presenter.toggleLikeOnError = (e) {
+      Future.delayed(Duration.zero).then((_) {
+        KNavigator.changeLoadingStatus(false);
+      });
+    };
   }
 
   void getNextComments() {
@@ -119,6 +132,8 @@ class CommentsController extends Controller {
       targetId: postId,
       text: text,
       sharedOn: DateTime.now(),
+      authorAvatarUrl: '',
+      commentLikesCount: 0,
     ));
   }
 
@@ -129,11 +144,27 @@ class CommentsController extends Controller {
     });
     _presenter.addComment(Comment(
       id: '',
-      authorId: '', // Optionally set current user ID
-      authorName: '', // Optionally set current user name
+      authorId: '',
+      authorName: '',
       targetId: postId,
       text: text,
       sharedOn: DateTime.now(),
+      authorAvatarUrl: '',
+      commentLikesCount: 0,
     ));
+  }
+
+  void toggleLike(String commentId) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    final comment = comments.firstWhere((c) => c.id == commentId);
+    final isLiked = comment.isLikedByUser(currentUser.uid);
+
+    Future.delayed(Duration.zero).then((_) {
+      KNavigator.changeLoadingStatus(true);
+    });
+
+    _presenter.toggleLike(postId, commentId, currentUser.uid, isLiked);
   }
 }

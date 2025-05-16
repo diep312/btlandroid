@@ -9,7 +9,6 @@ import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:chit_chat/src/app/widgets/post_options_bottom_sheet.dart';
 
-
 class KPost extends StatelessWidget {
   final Post post;
   final Function(Post post) changePostLike;
@@ -17,7 +16,7 @@ class KPost extends StatelessWidget {
   final Function(BuildContext context, Post post) navigateToComments;
   final Function(Post post) onEdit;
   final Function(Post post) onDelete;
-
+  final Function(String userId) onAvatarTap;
   final int index;
   final bool isSeen = false;
   final bool showAnimation;
@@ -30,6 +29,7 @@ class KPost extends StatelessWidget {
     required this.navigateToComments,
     required this.onEdit,
     required this.onDelete,
+    required this.onAvatarTap,
     required this.showAnimation,
   });
 
@@ -48,7 +48,6 @@ class KPost extends StatelessWidget {
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -93,25 +92,28 @@ class KPost extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: ClipOval(
-                        child: post.publisherLogoUrl.isEmpty
-                            ? Image.asset(
-                                isCurrentUserPost
-                                    ? 'assets/icons/png/current_user.png'
-                                    : 'assets/icons/png/default_user.png',
-                                height: 40,
-                                width: 40,
-                                fit: BoxFit.cover,
-                              )
-                            : CachedNetworkImage(
-                                imageUrl: post.publisherLogoUrl,
-                                height: 40,
-                                width: 40,
-                                fit: BoxFit.cover,
-                                placeholder: (a, b) {
-                                  return ShimmheredPublisher();
-                                },
-                              ),
+                      child: GestureDetector(
+                        onTap: () => onAvatarTap(post.publisherId),
+                        child: ClipOval(
+                          child: post.publisherLogoUrl.isEmpty
+                              ? Image.asset(
+                                  isCurrentUserPost
+                                      ? 'assets/icons/png/current_user.png'
+                                      : 'assets/icons/png/default_user.png',
+                                  height: 40,
+                                  width: 40,
+                                  fit: BoxFit.cover,
+                                )
+                              : CachedNetworkImage(
+                                  imageUrl: post.publisherLogoUrl,
+                                  height: 40,
+                                  width: 40,
+                                  fit: BoxFit.cover,
+                                  placeholder: (a, b) {
+                                    return ShimmheredPublisher();
+                                  },
+                                ),
+                        ),
                       ),
                     ),
                     SizedBox(width: 10),
@@ -148,14 +150,32 @@ class KPost extends StatelessWidget {
                 SizedBox(height: 16),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: CachedNetworkImage(
-                    imageUrl: post.imageUrl,
-                    fit: BoxFit.fill,
-                    width: MediaQuery.of(context).size.width - 34,
-                    height: MediaQuery.of(context).size.width - 34,
-                    placeholder: (a, b) {
-                      return ImageShimmer();
-                    },
+                  child: Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: post.imageUrl,
+                        fit: BoxFit.fill,
+                        width: MediaQuery.of(context).size.width - 34,
+                        height: MediaQuery.of(context).size.width - 34,
+                        placeholder: (a, b) {
+                          return ImageShimmer();
+                        },
+                      ),
+                      showAnimation
+                          ? Container(
+                              height: MediaQuery.of(context).size.width - 34,
+                              width: MediaQuery.of(context).size.width - 34,
+                              child: Center(
+                                child: Container(
+                                  width: 250,
+                                  height: 250,
+                                  child: Lottie.asset(
+                                      'assets/animations/post_like_animation.json'),
+                                ),
+                              ),
+                            )
+                          : Container(),
+                    ],
                   ),
                 ),
                 SizedBox(height: 16),
@@ -194,7 +214,6 @@ class KPost extends StatelessWidget {
                     GestureDetector(
                       behavior: HitTestBehavior.translucent,
                       onTap: () => _showOptionsBottomSheet(context),
-
                       child: Icon(Icons.more_horiz, color: Colors.black54),
                     ),
                   ],

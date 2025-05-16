@@ -77,8 +77,8 @@ class _HomeViewState extends ViewState<_HomeView, HomeController> {
               Expanded(
                 child: LiquidPullToRefresh(
                   showChildOpacityTransition: false,
-                  backgroundColor: kPrimary,
-                  color: kSecondary,
+                  backgroundColor: kWhite,
+                  color: Color(0xFF6EC6FF),
                   onRefresh: () async {
                     controller.refreshStreamController.add(true);
                     controller.getPosts();
@@ -96,7 +96,6 @@ class _HomeViewState extends ViewState<_HomeView, HomeController> {
                         child: StoriesViewHolder(
                           refresh: controller.refreshStreamController.stream,
                         ),
-
                       ),
                       SizedBox(height: 10),
                       !controller.postsInitialized
@@ -124,11 +123,11 @@ class _HomeViewState extends ViewState<_HomeView, HomeController> {
                                             controller.posts[i].id,
                                           );
                                         },
+                                        onAvatarTap: controller.onAvatarTap,
                                         toggleFavoriteState:
                                             controller.togglePostFavoriteState,
                                         onEdit: controller.editPost,
                                         onDelete: controller.deletePost,
-
                                         showAnimation:
                                             controller.lastLikedPost ==
                                                 controller.posts[i].id,

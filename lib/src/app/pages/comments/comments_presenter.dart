@@ -8,6 +8,7 @@ import 'package:chit_chat/src/domain/usecases/add_comment.dart';
 import 'package:chit_chat/src/domain/usecases/get_comments.dart';
 import 'package:chit_chat/src/domain/usecases/get_next_comments.dart';
 import 'package:chit_chat/src/domain/usecases/remove_comment.dart';
+import 'package:chit_chat/src/domain/usecases/toggle_comment_like.dart';
 
 class CommentsPresenter extends Presenter {
   late Function removeCommentOnComplete;
@@ -22,10 +23,14 @@ class CommentsPresenter extends Presenter {
   late Function addCommentOnComplete;
   late Function addCommentOnError;
 
+  late Function toggleLikeOnComplete;
+  late Function toggleLikeOnError;
+
   final RemoveComment _removeComment;
   final GetComments _getComments;
   final GetNextComments _getNextComments;
   final AddComment _addComment;
+  final ToggleCommentLike _toggleCommentLike;
 
   CommentsPresenter(
     PostRepository postRepository,
@@ -33,7 +38,8 @@ class CommentsPresenter extends Presenter {
   )   : _removeComment = RemoveComment(postRepository),
         _getComments = GetComments(postRepository),
         _addComment = AddComment(postRepository, userRepository),
-        _getNextComments = GetNextComments(postRepository);
+        _getNextComments = GetNextComments(postRepository),
+        _toggleCommentLike = ToggleCommentLike(postRepository);
 
   void removeComment(String postId, String commentId) {
     _removeComment.execute(
@@ -54,12 +60,26 @@ class CommentsPresenter extends Presenter {
     _addComment.execute(_AddCommentObserver(this), AddCommentParams(comment));
   }
 
+  void toggleLike(
+      String postId, String commentId, String userId, bool isLiked) {
+    _toggleCommentLike.execute(
+      _ToggleLikeObserver(this),
+      ToggleCommentLikeParams(
+        postId: postId,
+        commentId: commentId,
+        userId: userId,
+        isLiked: isLiked,
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _getComments.dispose();
     _getNextComments.dispose();
     _removeComment.dispose();
     _addComment.dispose();
+    _toggleCommentLike.dispose();
   }
 }
 
@@ -133,6 +153,25 @@ class _GetNextCommentsObserver extends Observer<void> {
   @override
   void onError(e) {
     _presenter.getNextCommentsOnError(e);
+  }
+
+  @override
+  void onNext(_) {}
+}
+
+class _ToggleLikeObserver extends Observer<void> {
+  final CommentsPresenter _presenter;
+
+  _ToggleLikeObserver(this._presenter);
+
+  @override
+  void onComplete() {
+    _presenter.toggleLikeOnComplete();
+  }
+
+  @override
+  void onError(e) {
+    _presenter.toggleLikeOnError(e);
   }
 
   @override

@@ -4,16 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:chit_chat/src/app/constants/constants.dart';
 import 'package:chit_chat/src/app/pages/add_post/add_post_controller.dart';
-import 'package:chit_chat/src/app/widgets/k_app_bar.dart';
 import 'package:chit_chat/src/app/widgets/k_button.dart';
-import 'package:chit_chat/src/app/widgets/k_textformfield.dart';
-import 'package:chit_chat/src/data/helpers/validator_helper.dart';
 import 'package:chit_chat/src/data/repositories/data_post_repository.dart';
 import 'package:chit_chat/src/data/repositories/data_user_repository.dart';
 import 'package:chit_chat/src/app/constants/texts.dart';
-import 'package:chit_chat/src/domain/entities/user.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-
 
 class AddPostView extends View {
   @override
@@ -29,18 +23,16 @@ class _AddPostViewState extends ViewState<AddPostView, AddPostController> {
   _AddPostViewState(super.controller);
 
   final FocusNode _descFocusNode = FocusNode();
-  bool _isDescFocused = false;
 
   @override
+  // ignore: invalid_override_of_non_virtual_member
   void initState() {
     super.initState();
     _descFocusNode.addListener(_onFocusChange);
   }
 
   void _onFocusChange() {
-    setState(() {
-      _isDescFocused = _descFocusNode.hasFocus;
-    });
+    setState(() {});
   }
 
   @override
@@ -76,7 +68,14 @@ class _AddPostViewState extends ViewState<AddPostView, AddPostController> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                                AssetImage('assets/icons/png/current_user.png'),
+                                controller.userProfile?.avatarUrl != null &&
+                                        controller
+                                            .userProfile!.avatarUrl!.isNotEmpty
+                                    ? NetworkImage(
+                                        controller.userProfile!.avatarUrl!)
+                                    : AssetImage(
+                                            'assets/icons/png/current_user.png')
+                                        as ImageProvider,
                           ),
                           SizedBox(width: 10),
                           Column(
@@ -89,7 +88,7 @@ class _AddPostViewState extends ViewState<AddPostView, AddPostController> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16)),
                               Text(
-                                  '@${controller.currentUser?.displayName ?? 'username'}',
+                                  '${controller.currentUser?.email ?? 'Đang tải...'}',
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 13)),
                             ],

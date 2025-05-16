@@ -6,6 +6,7 @@ import 'package:chit_chat/src/domain/entities/comment.dart';
 import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:chit_chat/src/domain/entities/user.dart';
 import 'package:collection/collection.dart';
+
 import 'package:chit_chat/src/domain/repositories/post_repository.dart';
 
 class DataPostRepository implements PostRepository {
@@ -33,14 +34,12 @@ class DataPostRepository implements PostRepository {
 
   List<Comment>? comments;
 
-  
   List<Post>? _posts;
   List<Post> _favoritedPosts = [];
   Set<String> likedPostIds = {};
   Set<String> favoritesPostIds = {};
 
   bool isFavoritePostsInitialized = false;
-
 
   @override
   void killInstance() {
@@ -127,7 +126,6 @@ class DataPostRepository implements PostRepository {
       Post? favoritePost =
           _favoritedPosts.firstWhereOrNull((post) => post.id == postId);
 
-
       if (favoritePost != null) {
         favoritePost.numberOfLikes--;
         favoritePost.isLiked = false;
@@ -197,7 +195,6 @@ class DataPostRepository implements PostRepository {
           }
           _posts!.add(post);
         });
-
       }
 
       _posts!.sort((a, b) => b.publishedOn.compareTo(a.publishedOn));
@@ -238,7 +235,6 @@ class DataPostRepository implements PostRepository {
     }
   }
 
-
   @override
   Future<void> addPost(Post post) async {
     try {
@@ -273,6 +269,8 @@ class DataPostRepository implements PostRepository {
         sharedOn: comment.sharedOn,
         targetId: comment.targetId,
         text: comment.text,
+        authorAvatarUrl: comment.authorAvatarUrl,
+        commentLikesCount: comment.commentLikesCount,
       );
 
       _firestore.collection('commentCounts').doc(comment.targetId).set(
@@ -373,7 +371,6 @@ class DataPostRepository implements PostRepository {
           }
           _posts!.add(post);
         });
-
       }
 
       _posts!.sort((a, b) => b.publishedOn.compareTo(a.publishedOn));
@@ -534,7 +531,6 @@ class DataPostRepository implements PostRepository {
       _favoritedPostsStreamController
           .add(UnmodifiableListView(_favoritedPosts));
 
-
       _postsStreamController.add(UnmodifiableListView(_posts!));
     } catch (e, st) {
       print(e);
@@ -626,4 +622,102 @@ class DataPostRepository implements PostRepository {
     }
   }
 
+  @override
+  Future<void> toggleCommentLike(
+    String postId,
+    String commentId,
+    String userId,
+    bool isLiked,
+  ) async {
+    try {
+      final commentRef = _firestore.collection('comments').doc(commentId);
+
+      if (isLiked) {
+        // Unlike the comment
+        await commentRef.update({
+          'commentLikesCount': FieldValue.increment(-1),
+          'likedByUsers': FieldValue.arrayRemove([userId])
+        });
+      } else {
+        // Like the comment
+        await commentRef.update({
+          'commentLikesCount': FieldValue.increment(1),
+          'likedByUsers': FieldValue.arrayUnion([userId])
+        });
+      }
+
+      // Update the local comments list if it exists
+      if (comments != null) {
+        final commentIndex = comments!.indexWhere((c) => c.id == commentId);
+        if (commentIndex != -1) {
+          final comment = comments![commentIndex];
+          final updatedLikedByUsers = List<String>.from(comment.likedByUsers);
+
+          if (isLiked) {
+            updatedLikedByUsers.remove(userId);
+            comment.commentLikesCount--;
+          } else {
+            updatedLikedByUsers.add(userId);
+            comment.commentLikesCount++;
+          }
+
+          comments![commentIndex] = Comment(
+            id: comment.id,
+            authorId: comment.authorId,
+            authorName: comment.authorName,
+            targetId: comment.targetId,
+            text: comment.text,
+            sharedOn: comment.sharedOn,
+            authorAvatarUrl: comment.authorAvatarUrl,
+            commentLikesCount: comment.commentLikesCount,
+            likedByUsers: updatedLikedByUsers,
+          );
+
+          _commentsStreamController.add(UnmodifiableListView(comments!));
+        }
+      }
+    } catch (e, st) {
+      print(e);
+      print(st);
+      rethrow;
+    }
+  }
+
+  @override
+  Stream<List<Post>?> getUserPost(String userId) async* {
+    try {
+      final querySnapshot = await _firestore
+          .collection('posts')
+          .where('publisherId', isEqualTo: userId)
+          .orderBy('publishedOn', descending: true)
+          .get();
+
+      List<Post> posts = [];
+      for (var doc in querySnapshot.docs) {
+        Post post = Post.fromJson(doc.data(), doc.id);
+
+        final snapshot =
+            await _firestore.collection('commentCounts').doc(doc.id).get();
+
+        if (snapshot.data() != null) {
+          post.numberOfComments = snapshot.data()!['total'];
+        }
+
+        if (likedPostIds.contains(doc.id)) {
+          post.isLiked = true;
+        }
+
+        if (favoritesPostIds.contains(doc.id)) {
+          post.isFavorited = true;
+        }
+
+        posts.add(post);
+      }
+
+      yield posts;
+    } catch (e) {
+      print('Error in getUserPost: $e');
+      yield null;
+    }
+  }
 }

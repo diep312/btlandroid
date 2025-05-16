@@ -41,14 +41,43 @@ class DefaultTexts {
   static String get loginWithGoogle => 'Đăng nhập bằng Google';
   static String get loginWithPhone => 'Đăng nhập bằng điện thoại';
 
-  
+  static String get explore => 'Khám phá';
+  static String get messages => 'Tin nhắn';
+  static String get favorites => 'Yêu thích';
+  static String get comments => 'Bình luận';
+  static String get addPost => 'Thêm bài viết';
   static String get verifyPhone => 'Xác minh số điện thoại';
   static String get startPhoneAuth => 'Bắt đầu xác thực';
   static String get users => 'Người dùng';
-
+  static String get addStory => 'Thêm story';
 
   static String get post => 'Đăng';
   static String get writeYourThoughts => 'Viết về suy nghĩ của bạn...';
   static String get pickFromGallery => 'Chọn ảnh từ thư viện';
   static String get pickFromCamera => 'Chụp ảnh từ camera';
+
+  // Chat View Texts
+  static String get noMessageHistory =>
+      'Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện';
+  static String get writeMessage => 'Viết tin nhắn...';
+  static String get close => 'Đóng';
+  static String get send => 'Gửi';
+
+  // Post Options Texts
+  static String get removeFromFavorites => 'Xóa khỏi yêu thích';
+  static String get addToFavorites => 'Thêm vào yêu thích';
+  static String get editPost => 'Chỉnh sửa bài viết';
+  static String get deletePost => 'Xóa bài viết';
+
+  static String get followers => 'Người theo dõi';
+  static String get editProfile => 'Chỉnh sửa hồ sơ';
+  static String get message => 'Nhắn tin';
+  static String get noDescription => 'Chưa có mô tả.';
+  static String get email => 'Email';
+  static String get logout => 'Đăng xuất';
+  static String get noComments => 'Chưa có bình luận nào.';
+
+  static String get phoneAuthTitle => 'Xin vui lòng nhập số điện thoại';
+  static String get phoneNumberLabel => 'Số điện thoại';
+  static String get phoneNumberHint => '09xxxxxxx';
 }

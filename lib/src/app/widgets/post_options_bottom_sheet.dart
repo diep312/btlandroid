@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:chit_chat/src/domain/entities/post.dart';
 import 'package:chit_chat/src/app/widgets/k_draggable_bottom_sheet.dart';
+import 'package:chit_chat/src/app/constants/texts.dart';
 
 class PostOptionsBottomSheet extends StatelessWidget {
   final Post post;
@@ -26,10 +27,23 @@ class PostOptionsBottomSheet extends StatelessWidget {
       maxChildSize: 0.4,
       child: Column(
         children: [
+          ListTile(
+            leading: Icon(
+              post.isFavorited ? Icons.favorite : Icons.favorite_border,
+              color: Colors.red,
+            ),
+            title: Text(post.isFavorited
+                ? DefaultTexts.removeFromFavorites
+                : DefaultTexts.addToFavorites),
+            onTap: () {
+              Navigator.pop(context);
+              onToggleFavorite(post);
+            },
+          ),
           if (isCurrentUserPost) ...[
             ListTile(
               leading: Icon(Icons.edit, color: Colors.blue),
-              title: Text('Edit Post'),
+              title: Text(DefaultTexts.editPost),
               onTap: () {
                 Navigator.pop(context);
                 onEdit(post);
@@ -37,24 +51,10 @@ class PostOptionsBottomSheet extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.delete, color: Colors.red),
-              title: Text('Delete Post'),
+              title: Text(DefaultTexts.deletePost),
               onTap: () {
                 Navigator.pop(context);
                 onDelete(post);
-              },
-            ),
-          ] else ...[
-            ListTile(
-              leading: Icon(
-                post.isFavorited ? Icons.favorite : Icons.favorite_border,
-                color: Colors.red,
-              ),
-              title: Text(post.isFavorited
-                  ? 'Remove from Favorites'
-                  : 'Add to Favorites'),
-              onTap: () {
-                Navigator.pop(context);
-                onToggleFavorite(post);
               },
             ),
           ],
